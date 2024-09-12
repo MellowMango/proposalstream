@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1724622661253" clover="3.2.0">
+  <project timestamp="1724622661253" name="All files">
+    <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="6" coveredelements="6" complexity="0" loc="6" ncloc="6" packages="1" files="2" classes="2"/>
+    <file name="Job.js" path="/Users/guyma/proposalstream/models/Job.js">
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="27" count="1" type="stmt"/>
+    </file>
+    <file name="Vendor.js" path="/Users/guyma/proposalstream/models/Vendor.js">
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="31" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

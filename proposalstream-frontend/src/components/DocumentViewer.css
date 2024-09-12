@@ -1,0 +1,35 @@
+.document-viewer {
+  position: relative;
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.docx-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.field-name-tooltip {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.field-name-tooltip select {
+  margin-right: 5px;
+}
+
+.field-name-tooltip button {
+  margin-left: 5px;
+}
+
+.document-viewer-container {
+  width: 65%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

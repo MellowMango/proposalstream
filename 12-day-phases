@@ -1,0 +1,76 @@
+# Project Task Checklist
+
+# Day 1: Project Setup and Environment Configuration
+- Set up the project repository (e.g., GitHub, GitLab).
+- Configure the `.env` file with MongoDB Atlas connection strings and other necessary environment variables.
+- Set up the development environment (Node.js, Python, etc.).
+- Initialize the project with package managers and install essential dependencies.
+- Configure linting and formatting tools (ESLint, Prettier).
+- Set up basic project structure with directories and placeholder files.
+
+# Day 2: Database Setup and Schema Definitions
+- Implement the MongoDB Atlas connection file.
+- Define the database schemas for the primary collections: Jobs, Vendors, Contracts.
+- Create models for each schema, handling basic CRUD operations.
+- Write initial unit tests for models to ensure they are working correctly.
+
+# Day 3: API Layer - Routing and Basic Controllers
+- Set up the API routing structure.
+- Implement basic CRUD routes for Jobs and Vendors.
+- Develop controllers for handling job creation and vendor submissions.
+- Implement validation middleware for ensuring required fields are completed.
+- Write unit tests for the controllers and middleware.
+
+# Day 4: API Layer - Advanced Controllers and Error Handling
+- Implement additional routes for contract management and approval processes.
+- Develop controllers for contract generation and approval flow.
+- Implement centralized error handling middleware.
+- Create unit tests for advanced controllers and error handling.
+
+# Day 5: User Interface (UI) - Basic Setup
+- Initialize the front-end project (React, Vue, or Angular).
+- Set up routing and main page layouts.
+- Develop basic form components for job requests and vendor submissions.
+- Create UI components for feedback mechanisms (e.g., confirmation modals, error alerts).
+
+# Day 6: User Interface (UI) - Advanced Features
+- Implement dynamic form validations and data binding to the API.
+- Develop components for contract management (e.g., displaying contracts, approval buttons).
+- Style the application for consistency (CSS/SCSS or styled-components).
+- Test the UI components with integration tests.
+
+# Day 7: Mail Service and Contract Generation
+- Implement the mail service for sending confirmation emails using SendGrid or Amazon SES.
+- Develop the contract generation service, including mail merge and PDF conversion.
+- Integrate the mail service with the API controllers.
+- Test the mail service and contract generation with real data.
+
+# Day 8: Security and Authentication
+- Implement JWT-based authentication for users.
+- Set up role-based access control (RBAC) for different user types (admin, vendor, PM).
+- Implement authorization middleware to protect sensitive routes.
+- Test authentication and authorization with unit and integration tests.
+
+# Day 9: Testing and Documentation
+- Write additional unit tests to cover any untested parts of the system.
+- Implement end-to-end (E2E) tests using Cypress or a similar tool.
+- Begin documenting the API, setup instructions, and user guides.
+- Review test coverage and documentation completeness.
+
+# Day 10: Deployment and CI/CD Setup
+- Set up Docker for containerization of the application.
+- Configure CI/CD pipeline using GitHub Actions or another CI tool.
+- Write deployment scripts and set up the production environment.
+- Perform a full deployment to a staging environment and run all tests.
+
+# Day 11: Final Testing, Bug Fixing, and Review
+- Perform a thorough review of the entire application, checking for bugs, performance issues, or missing features.
+- Fix any identified bugs or issues.
+- Conduct a final round of testing in both the staging and production environments.
+- Finalize all documentation and prepare for production deployment.
+
+# Day 12: Production Deployment and Monitoring Setup
+- Deploy the application to the production environment.
+- Set up monitoring and logging tools (e.g., AWS CloudWatch, Loggly) to track the application’s performance and errors.
+- Monitor the application for initial issues post-deployment.
+- Hand off the project with all documentation, access credentials, and a final review meeting.

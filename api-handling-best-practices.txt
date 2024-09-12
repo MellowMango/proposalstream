@@ -1,0 +1,120 @@
+# API Handling Best Practices
+
+1. API Calls:
+   - Use the `api` utility from `src/utils/api.js` for all API calls.
+   - Always include the authorization header:
+
+   ```javascript
+   const response = await api.get('/endpoint', {
+     headers: {
+       Authorization: `Bearer ${localStorage.getItem('token')}`
+     }
+   });
+   ```
+
+2. Error Handling:
+   - Wrap all API calls in try-catch blocks.
+   - Log errors to the console and show user-friendly notifications:
+
+   ```javascript
+   try {
+     // API call
+   } catch (error) {
+     console.error('Error description:', error);
+     console.error('Error response:', error.response?.data);
+     console.error('Error status:', error.response?.status);
+     showNotification(`User-friendly error message: ${error.message}`, 'error');
+   }
+   ```
+
+3. Loading State:
+   - Set a loading state before API calls and reset it after:
+
+   ```javascript
+   setLoading(true);
+   try {
+     // API call
+   } finally {
+     setLoading(false);
+   }
+   ```
+
+4. Data Fetching:
+   - Use `useCallback` for data fetching functions.
+   - Call data fetching functions in `useEffect`:
+
+   ```javascript
+   const fetchData = useCallback(async () => {
+     // Fetching logic
+   }, [dependencies]);
+
+   useEffect(() => {
+     fetchData();
+   }, [fetchData]);
+   ```
+
+5. Backend URL:
+   - Always use the `getBackendUrl` function to get the backend URL:
+
+   ```javascript
+   const baseUrl = await getBackendUrl();
+   ```
+
+6. Token Handling:
+   - Check for token existence before making authenticated requests:
+
+   ```javascript
+   const token = localStorage.getItem('token');
+   if (!token) {
+     throw new Error('No authentication token found');
+   }
+   ```
+
+7. Response Handling:
+   - Always check the response status before processing data:
+
+   ```javascript
+   if (response.status === 200) {
+     // Process successful response
+   } else {
+     throw new Error('Unexpected response status');
+   }
+   ```
+
+8. Data Updates:
+   - After successful API calls that modify data, update the local state or refetch data:
+
+   ```javascript
+   await api.put(`/api/endpoint/${id}`, data);
+   await fetchData(); // Refetch all data
+   // OR
+   setData(prevData => prevData.map(item => item.id === id ? updatedItem : item));
+   ```
+
+9. Conditional Rendering:
+   - Always check if data is an array before mapping:
+
+   ```javascript
+   {Array.isArray(data) && data.length > 0 ? (
+     <ul>
+       {data.map(item => (
+         <li key={item.id}>{item.name}</li>
+       ))}
+     </ul>
+   ) : (
+     <p>No data available.</p>
+   )}
+   ```
+
+10. Logout Handling:
+    - If a 403 error is received, log out the user and redirect to login:
+
+    ```javascript
+    if (error.response?.status === 403) {
+      showNotification('Session expired. Please log in again.', 'error');
+      logout();
+      // Redirect to login page
+    }
+    ```
+
+By following these guidelines, you can maintain consistency and reduce errors when working with APIs in this project.
