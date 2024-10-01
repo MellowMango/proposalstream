@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import DocumentViewer from './DocumentViewer';
 import mammoth from 'mammoth';
+import './ContractTemplateUpload.css';
+import ContractTemplatesList from './ContractTemplatesList';
+import ViewTemplateModal from './ViewTemplateModal';
+import EditTemplateModal from './EditTemplateModal';
 
 function ContractTemplateUpload({ showNotification }) {
   const [file, setFile] = useState(null);
@@ -10,6 +14,14 @@ function ContractTemplateUpload({ showNotification }) {
   const [loading, setLoading] = useState(false);
   const [templates, setTemplates] = useState([]);
   const [htmlContent, setHtmlContent] = useState(null);
+  
+  // New state variables for contract type and custom name
+  const [contractType, setContractType] = useState('service agreement');
+  const [customContractName, setCustomContractName] = useState('');
+
+  // New state for managing modals or views
+  const [viewingTemplate, setViewingTemplate] = useState(null);
+  const [editingTemplate, setEditingTemplate] = useState(null);
 
   useEffect(() => {
     fetchTemplates();
@@ -84,11 +96,18 @@ function ContractTemplateUpload({ showNotification }) {
       return;
     }
 
+    // If contract type is 'other', ensure custom name is provided
+    if (contractType === 'other' && customContractName.trim() === '') {
+      showNotification('Please provide a custom name for the contract template', 'error');
+      return;
+    }
+
     setLoading(true);
     const templateData = {
       htmlContent,
       fields: selectedFields,
-      originalFileName: file.name
+      originalFileName: file.name,
+      contractType: contractType === 'other' ? customContractName : contractType
     };
 
     try {
@@ -97,6 +116,8 @@ function ContractTemplateUpload({ showNotification }) {
       setFile(null);
       setHtmlContent(null);
       setSelectedFields([]);
+      setContractType('service agreement');
+      setCustomContractName('');
       fetchTemplates();
     } catch (error) {
       showNotification(`Error uploading template: ${error.message}`, 'error');
@@ -105,10 +126,59 @@ function ContractTemplateUpload({ showNotification }) {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this contract template?')) {
+      return;
+    }
+    try {
+      await api.delete(`/api/contract-templates/${id}`);
+      showNotification('Contract template deleted successfully', 'success');
+      fetchTemplates();
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      showNotification(`Error deleting template: ${error.response?.data?.message || error.message}`, 'error');
+    }
+  };
+
+  const handleEdit = (template) => {
+    setEditingTemplate(template);
+    // Logic to open an edit form/modal
+  };
+
+  const handleView = (template) => {
+    setViewingTemplate(template);
+    // Logic to open a view modal or navigate to a detailed view page
+  };
+
   return (
     <div className="contract-template-upload">
       <h2>Upload Contract Template</h2>
       <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="contractType">Contract Type:</label>
+          <select
+            id="contractType"
+            value={contractType}
+            onChange={(e) => setContractType(e.target.value)}
+          >
+            <option value="service agreement">Service Agreement</option>
+            <option value="change order">Change Order</option>
+            <option value="professional services agreement">Professional Services Agreement</option>
+            <option value="other">Other Contract Type</option>
+          </select>
+        </div>
+        {contractType === 'other' && (
+          <div>
+            <label htmlFor="customContractName">Custom Contract Name:</label>
+            <input
+              type="text"
+              id="customContractName"
+              value={customContractName}
+              onChange={(e) => setCustomContractName(e.target.value)}
+              placeholder="Enter custom contract name"
+            />
+          </div>
+        )}
         <div>
           <label htmlFor="template">Contract Template (DOCX):</label>
           <input type="file" id="template" accept=".docx" onChange={handleFileChange} />
@@ -127,7 +197,10 @@ function ContractTemplateUpload({ showNotification }) {
           <ul>
             {selectedFields.map((field, index) => (
               <li key={index}>
-                {field.name} - {field.text}
+                <div className="field-info">
+                  <span className="field-name">{field.name}</span>
+                  <span className="field-text">{field.text}</span>
+                </div>
                 <button type="button" onClick={() => handleFieldRemove(field)}>Remove</button>
               </li>
             ))}
@@ -138,16 +211,33 @@ function ContractTemplateUpload({ showNotification }) {
         </button>
       </form>
 
-      <div className="existing-templates">
-        <h3>Existing Templates</h3>
-        <ul>
-          {templates.map((template) => (
-            <li key={template._id}>
-              {template.originalFileName} - Fields: {template.fields.map(f => f.name).join(', ')}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ContractTemplatesList 
+        templates={templates} 
+        onDelete={handleDelete} 
+        onEdit={handleEdit} 
+        onView={handleView} 
+      />
+
+      {/* Modals or Separate Components for Viewing and Editing */}
+      {viewingTemplate && (
+        <ViewTemplateModal 
+          template={viewingTemplate} 
+          onClose={() => setViewingTemplate(null)} 
+        />
+      )}
+
+      {editingTemplate && (
+        <EditTemplateModal 
+          template={editingTemplate} 
+          onClose={() => setEditingTemplate(null)} 
+          onUpdated={() => {
+            setEditingTemplate(null);
+            fetchTemplates();
+            showNotification('Contract template updated successfully', 'success');
+          }} 
+          showNotification={showNotification}
+        />
+      )}
     </div>
   );
 }

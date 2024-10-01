@@ -1,3 +1,6 @@
 node_modules/
 .env
-.DS_Storeuploads/
+.DS_Store
+/backend/uploads/
+/backend/node_modules/
+/proposalstream-frontend/node_modules/

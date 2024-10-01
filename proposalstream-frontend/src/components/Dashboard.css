@@ -1,0 +1,168 @@
+/* Dashboard Container */
+.dashboard {
+    padding: 20px;
+    max-width: 1400px; /* Increased max-width for larger screens */
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border-radius: 10px; /* Slightly increased border-radius for smoother corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Enhanced shadow for depth */
+}
+
+/* Dashboard Title */
+.dashboard-title {
+    text-align: center;
+    color: #343a40;
+    margin-bottom: 10px;
+    font-size: 2.5rem; /* Larger font size for prominence */
+    font-weight: 700;
+}
+
+/* Greeting Message */
+.dashboard-greeting {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-size: 1.4rem; /* Slightly larger for better readability */
+    font-weight: 500;
+}
+
+/* Options Container */
+.options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px; /* Increased gap for better separation */
+    justify-content: center;
+}
+
+/* Option Card */
+.option-card {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 25px; /* Increased padding for balanced spacing */
+    width: 320px; /* Slightly increased width */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Hover Effect for Option Card */
+.option-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Option Card Title */
+.option-card h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Option List */
+.option-card ul {
+    list-style: none;
+    padding: 0;
+    width: 100%; /* Ensure list takes full width */
+}
+
+/* Option List Items */
+.option-card li {
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* Option Links */
+.option-card a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+    transition: color 0.3s;
+    display: inline-block;
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 4px;
+}
+
+/* Hover Effect for Links */
+.option-card a:hover {
+    color: #0056b3;
+    background-color: #e2e6ea; /* Subtle background on hover */
+}
+
+/* Specific Styles for Admin Option Cards */
+.option-card.admin {
+    border-color: #dc3545; /* Red border to indicate admin */
+}
+
+.option-card.admin h2 {
+    color: #dc3545; /* Red color for admin titles */
+}
+
+/* Specific Styles for Client Option Cards */
+.option-card.client {
+    border-color: #28a745; /* Green border for client */
+}
+
+.option-card.client h2 {
+    color: #28a745; /* Green color for client titles */
+}
+
+/* Specific Styles for Vendor Option Cards */
+.option-card.vendor {
+    border-color: #17a2b8; /* Teal border for vendor */
+}
+
+.option-card.vendor h2 {
+    color: #17a2b8; /* Teal color for vendor titles */
+}
+
+/* Responsive Design for Tablets and Larger Devices */
+@media (max-width: 1024px) {
+    .dashboard {
+        max-width: 1000px;
+    }
+
+    .option-card {
+        width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .options-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .option-card {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+    }
+
+    .dashboard-greeting {
+        font-size: 1.2rem;
+    }
+
+    .option-card h2 {
+        font-size: 1.6rem;
+    }
+
+    .option-card li {
+        font-size: 1rem;
+    }
+}
+
+/* Accessibility: Focus Styles */
+.option-card a:focus {
+    outline: 2px dashed #0056b3;
+    outline-offset: 4px;
+}

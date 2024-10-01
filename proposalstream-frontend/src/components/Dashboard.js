@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/CombinedAuthContext';
+import navLinks from '../utils/navLinks'; // Import the centralized navLinks
+import './Dashboard.css'; // Import the CSS file for styling
 
 function Dashboard({ showNotification }) {
   const { user } = useContext(AuthContext);
@@ -9,46 +11,71 @@ function Dashboard({ showNotification }) {
     return <Navigate to="/login" />;
   }
 
-  const clientOptions = (
-    <div>
-      <h2>Client Options</h2>
-      <ul>
-        <li><Link to="/job-request">Submit a Job Request</Link></li>
-        <li><Link to="/contract-management">Manage Contracts</Link></li>
-        <li><Link to="/contract-template-upload">Upload Contract Template</Link></li>
-      </ul>
-    </div>
-  );
+  // Function to filter links based on user roles and exclude the Home link
+  const getFilteredLinks = () => {
+    return navLinks.filter(
+      (link) => link.roles.includes(user.role) && link.path !== '/'
+    );
+  };
 
-  const vendorOptions = (
-    <div>
-      <h2>Vendor Options</h2>
-      <ul>
-        <li><Link to="/job-request-management">Manage Job Requests</Link></li>
-        <li><Link to="/vendor-submission">Submit a Proposal</Link></li>
-      </ul>
-    </div>
-  );
+  // Separate links by category for better UI (optional)
+  const categorizedLinks = {
+    client: [],
+    vendor: [],
+    admin: [],
+  };
 
-  const adminOptions = (
-    <div>
-      <h2>Admin Options</h2>
+  getFilteredLinks().forEach((link) => {
+    // Categorize Client Links
+    if (link.roles.includes('client')) {
+      categorizedLinks.client.push(link);
+    }
+
+    // Categorize Vendor Links
+    if (link.roles.includes('vendor')) {
+      categorizedLinks.vendor.push(link);
+    }
+
+    // Categorize Admin Links (Only if the link is exclusively for admin)
+    if (link.roles.includes('admin') && link.roles.length === 1) {
+      categorizedLinks.admin.push(link);
+    }
+  });
+
+  // Helper function to create option cards based on categories
+  const createOptionCard = (title, links, category) => (
+    <div className={`option-card ${category}`} key={title}>
+      <h2>{title} Options</h2>
       <ul>
-        <li><Link to="/admin/user-management">Manage Users</Link></li>
-        <li><Link to="/admin/jobs">Manage All Jobs</Link></li>
-        <li><Link to="/admin/contracts">Manage All Contracts</Link></li>
-        <li><Link to="/contract-template-upload">Upload Contract Template</Link></li>
+        {links.map((link) => (
+          <li key={link.path}>
+            <Link to={link.path}>{link.name}</Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
 
   return (
     <div className="dashboard">
-      <h1>Welcome to Your Dashboard</h1>
-      <p>Hello, {user.email}!</p>
-      {(user.role === 'client' || user.role === 'admin') && clientOptions}
-      {(user.role === 'vendor' || user.role === 'admin') && vendorOptions}
-      {user.role === 'admin' && adminOptions}
+      <h1 className="dashboard-title">Welcome to Your Dashboard</h1>
+      <p className="dashboard-greeting">Hello, {user.email}!</p>
+      <div className="options-container">
+        {/* Render Client Options if applicable */}
+        {(user.role === 'client' || user.role === 'admin') &&
+          categorizedLinks.client.length > 0 &&
+          createOptionCard('Client', categorizedLinks.client, 'client')}
+
+        {/* Render Vendor Options if applicable */}
+        {(user.role === 'vendor' || user.role === 'admin') &&
+          categorizedLinks.vendor.length > 0 &&
+          createOptionCard('Vendor', categorizedLinks.vendor, 'vendor')}
+
+        {/* Render Admin Options if applicable */}
+        {user.role === 'admin' &&
+          categorizedLinks.admin.length > 0 &&
+          createOptionCard('Admin', categorizedLinks.admin, 'admin')}
+      </div>
     </div>
   );
 }

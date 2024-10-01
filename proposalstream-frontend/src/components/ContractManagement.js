@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import Modal from './Modal';
 import api, { getBackendUrl } from '../utils/api';
+import './ContractManagement.css';
 
 function ContractManagement({ showNotification }) {
   const [contracts, setContracts] = useState([]);
@@ -12,6 +14,8 @@ function ContractManagement({ showNotification }) {
   const [modalType, setModalType] = useState('');
   const [pdfUrl, setPdfUrl] = useState(null);
   const [contractTemplates, setContractTemplates] = useState([]);
+
+  const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
     try {
@@ -55,18 +59,26 @@ function ContractManagement({ showNotification }) {
 
   const fetchContractTemplates = useCallback(async () => {
     try {
-      const response = await api.get('/api/contract-templates');
+      const response = await api.get('/api/contract-templates', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      console.log('Templates found:', response.data);
       setContractTemplates(response.data);
     } catch (error) {
       console.error('Error fetching contract templates:', error);
-      showNotification('Error fetching contract templates', 'error');
+      showNotification(`Error fetching contract templates: ${error.response?.data?.message || error.message}`, 'error');
     }
   }, [showNotification]);
 
   useEffect(() => {
+    if (error) {
+      return;
+    }
     fetchData();
     fetchContractTemplates();
-  }, [fetchData, fetchContractTemplates]);
+  }, [fetchData, fetchContractTemplates, error]);
 
   const handleItemClick = async (item, type) => {
     setSelectedItem(item);
@@ -88,6 +100,11 @@ function ContractManagement({ showNotification }) {
   };
 
   const handleApproveProposal = async (proposalId) => {
+    if (contractTemplates.length === 0) {
+      showNotification('No contract templates available. Please upload a template first.', 'error');
+      return;
+    }
+
     try {
       setLoading(true);
       const selectedTemplateId = document.getElementById('templateSelect').value;
@@ -288,6 +305,19 @@ function ContractManagement({ showNotification }) {
 
   console.log('Rendering ContractManagement, proposals:', proposals);
   console.log('Rendering ContractManagement, contracts:', contracts);
+  console.log('Rendering ContractManagement, contractTemplates:', contractTemplates);
+
+  if (!loading && contractTemplates.length === 0) {
+    return (
+      <div className="contract-management no-templates">
+        <h2>Contract Management</h2>
+        <p>No contract templates found. Please upload a contract template to proceed.</p>
+        <Link to="/contract-template-upload">
+          <button className="navigate-button">Upload Contract Template</button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="contract-management">
@@ -297,7 +327,7 @@ function ContractManagement({ showNotification }) {
       </button>
       <h3>Proposals ({proposals.length})</h3>
       {Array.isArray(proposals) && proposals.length > 0 ? (
-        <ul>
+        <ul className="proposals-list">
           {proposals.map((proposal) => (
             <li key={proposal._id} onClick={() => handleItemClick(proposal, 'proposal')}>
               Building: {proposal.jobRequest?.building || proposal.job?.building || 'Unknown Building'} - 
@@ -311,7 +341,7 @@ function ContractManagement({ showNotification }) {
       )}
       <h3>Contracts ({contracts.length})</h3>
       {Array.isArray(contracts) && contracts.length > 0 ? (
-        <ul>
+        <ul className="contracts-list">
           {contracts.map((contract) => (
             <li key={contract._id} onClick={() => handleItemClick(contract, 'contract')}>
               Building: {contract.job?.building || 'Unknown Building'} - 
@@ -344,44 +374,54 @@ function ContractManagement({ showNotification }) {
               </div>
             )}
             {modalType === 'proposal' && (
-              <div>
-                {selectedItem.status === 'Submitted' && (
-                  <>
-                    <select id="templateSelect">
-                      <option value="">Select a contract template</option>
-                      {contractTemplates.map(template => (
-                        <option key={template._id} value={template._id}>
-                          {template.originalFileName}
-                        </option>
-                      ))}
-                    </select>
-                    <button onClick={() => handleApproveProposal(selectedItem._id)} disabled={loading}>
-                      {loading ? 'Approving...' : 'Approve Proposal'}
-                    </button>
-                    <button onClick={() => handleReviseProposal(selectedItem._id)} disabled={loading}>
-                      {loading ? 'Requesting Revision...' : 'Request Revision'}
-                    </button>
-                  </>
-                )}
-                {selectedItem.status === 'Approved' && (
-                  <p>This proposal has been approved.</p>
-                )}
-                {selectedItem.status === 'Needs Revision' && (
-                  <p>This proposal needs revision.</p>
-                )}
-                <button onClick={() => handleDeleteProposal(selectedItem._id)} disabled={loading}>
+              <div className="action-buttons">
+                <select id="templateSelect">
+                  <option value="">Select a contract template</option>
+                  {contractTemplates.map(template => (
+                    <option key={template._id} value={template._id}>
+                      {template.originalFileName}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="approve"
+                  onClick={() => handleApproveProposal(selectedItem._id)}
+                  disabled={loading}
+                >
+                  {loading ? 'Approving...' : 'Approve Proposal'}
+                </button>
+                <button
+                  className="request-revision"
+                  onClick={() => handleReviseProposal(selectedItem._id)}
+                  disabled={loading}
+                >
+                  {loading ? 'Requesting Revision...' : 'Request Revision'}
+                </button>
+                <button
+                  className="delete"
+                  onClick={() => handleDeleteProposal(selectedItem._id)}
+                  disabled={loading}
+                >
                   {loading ? 'Deleting...' : 'Delete Proposal'}
                 </button>
               </div>
             )}
             {modalType === 'contract' && (
-              <div>
+              <div className="action-buttons">
                 {selectedItem.contractStatus !== 'Approved' && (
-                  <button onClick={handleApproveContract} disabled={loading}>
+                  <button
+                    className="approve"
+                    onClick={handleApproveContract}
+                    disabled={loading}
+                  >
                     {loading ? 'Approving...' : 'Approve Contract'}
                   </button>
                 )}
-                <button onClick={handleDeleteContract} disabled={loading}>
+                <button
+                  className="delete"
+                  onClick={handleDeleteContract}
+                  disabled={loading}
+                >
                   {loading ? 'Deleting...' : 'Delete Contract'}
                 </button>
               </div>
