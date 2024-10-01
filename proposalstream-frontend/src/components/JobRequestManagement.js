@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import Modal from './Modal';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../contexts/AuthContext';
-import { jwtDecode } from 'jwt-decode';
+import { AuthContext } from '../contexts/CombinedAuthContext';
+import VendorSelector from './VendorSelector';
+import './JobRequestManagement.css';
 
 function JobRequestManagement({ showNotification }) {
   const { user, logout } = useContext(AuthContext);
@@ -270,23 +271,6 @@ function JobRequestManagement({ showNotification }) {
     }
   };
 
-  const checkTokenExpiration = useCallback(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      if (decodedToken.exp * 1000 < Date.now()) {
-        showNotification('Your session has expired. Please log in again.', 'error');
-        logout();
-        // Redirect to login page
-      }
-    }
-  }, [showNotification, logout]);
-
-  useEffect(() => {
-    checkTokenExpiration();
-    // ... other effect logic
-  }, [checkTokenExpiration]);
-
   if (loading) {
     return <div>Loading job requests...</div>;
   }
@@ -307,7 +291,7 @@ function JobRequestManagement({ showNotification }) {
           {jobRequests.map((jobRequest) => (
             <li key={jobRequest._id} onClick={() => handleJobRequestClick(jobRequest)}>
               Building: {jobRequest.building || 'Unknown Building'} - 
-              Client: {jobRequest.clientName || 'Unknown Client'} - 
+              Client: {jobRequest.client || 'Unknown Client'} - 
               Status: {jobRequest.status || 'Pending'} - 
               Proposal: {jobRequest.proposal ? 
                 (jobRequest.proposal.status === 'Deleted' ? 'Deleted' : 'Submitted') : 
@@ -322,7 +306,7 @@ function JobRequestManagement({ showNotification }) {
           <div>
             <h3>Job Request Details</h3>
             <p>Building: {selectedJobRequest.building || 'Unknown'}</p>
-            <p>Client: {selectedJobRequest.clientName || 'Unknown'}</p>
+            <p>Client: {selectedJobRequest.client || 'Unknown'}</p>
             <p>Request Details: {selectedJobRequest.requestDetails || 'Not provided'}</p>
             <p>Service Type: {selectedJobRequest.serviceType || 'Not specified'}</p>
             <p>Status: {selectedJobRequest.status || 'Pending'}</p>
@@ -331,17 +315,7 @@ function JobRequestManagement({ showNotification }) {
               <div>
                 <h4>Submit New Proposal</h4>
                 <input type="file" onChange={handleFileChange} accept=".pdf" />
-                <select 
-                  value={vendorId} 
-                  onChange={(e) => setVendorId(e.target.value)}
-                >
-                  <option value="">Select a Vendor</option>
-                  {vendors.map((vendor) => (
-                    <option key={vendor._id} value={vendor._id}>
-                      {vendor.vendorLLC}
-                    </option>
-                  ))}
-                </select>
+                <VendorSelector selectedVendor={vendorId} onVendorChange={setVendorId} />
                 <button onClick={handleSubmitProposal} disabled={loading || !scopeOfWork || !vendorId}>
                   {loading ? 'Submitting...' : 'Submit Proposal'}
                 </button>

@@ -1,147 +1,215 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { getBackendUrl } from '../utils/api';
+import { AuthContext } from '../contexts/CombinedAuthContext';
+import { Link } from 'react-router-dom';
+import VendorSelector from './VendorSelector';
+import AddVendorModal from './AddVendorModal';
+import './JobRequestForm.css';
 
 function JobRequestForm({ showNotification }) {
+  const { user } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    building: '',
-    clientName: '',
+    propertyId: '',
     requestDetails: '',
-    contractSignerEmail: '',
-    contractSignerFirstName: '',
-    contractSignerLastName: '',
-    serviceType: '', // Add this line
+    serviceType: '',
+    vendorId: '',
   });
   const [loading, setLoading] = useState(false);
+  const [properties, setProperties] = useState([]);
+  const [isAddVendorModalOpen, setIsAddVendorModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const baseUrl = await getBackendUrl();
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+        const response = await axios.get(`${baseUrl}/api/properties`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data && Array.isArray(response.data.properties)) {
+          setProperties(response.data.properties);
+        } else {
+          console.error('Unexpected response format:', response.data);
+          setProperties([]);
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        setProperties([]);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleVendorChange = (selectedVendor) => {
+    setFormData({ ...formData, vendorId: selectedVendor });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (properties.length === 0) {
+      showNotification('Please add a property before submitting a job request.', 'error');
+      return;
+    }
+
+    if (!formData.vendorId) {
+      showNotification('Please select a vendor.', 'error');
+      return;
+    }
+
     setLoading(true);
     try {
-      console.log('Attempting to get backend URL...');
       const baseUrl = await getBackendUrl();
-      console.log('Backend URL obtained:', baseUrl);
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
       }
-      const response = await axios.post(`${baseUrl}/api/jobs`, formData, {
+
+      const payload = {
+        propertyId: formData.propertyId,
+        requestDetails: formData.requestDetails,
+        serviceType: formData.serviceType,
+        vendorId: formData.vendorId,
+        // Remove 'client' from payload since backend attaches it automatically
+        // client: user._id,
+      };
+
+      const response = await axios.post(`${baseUrl}/api/jobs`, payload, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      console.log('Job request created:', response.data);
+
       showNotification('Job request submitted successfully', 'success');
       setFormData({
-        building: '',
-        clientName: '',
+        propertyId: '',
         requestDetails: '',
-        contractSignerEmail: '',
-        contractSignerFirstName: '',
-        contractSignerLastName: '',
-        serviceType: '', // Add this line
+        serviceType: '',
+        vendorId: '',
       });
     } catch (error) {
-      console.error('Error creating job request:', error);
-      if (error.response) {
-        console.error('Error response:', error.response.data);
-        console.error('Error status:', error.response.status);
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-      }
-      showNotification(`Error submitting job request: ${error.message}`, 'error');
+      console.error('Error creating job request:', error.response?.data || error.message);
+      const errorMsg = error.response?.data?.errors
+        ? error.response.data.errors.map(err => err.msg).join(', ')
+        : `Error submitting job request: ${error.message}`;
+      showNotification(errorMsg, 'error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="job-request-form">
-      <h2>New Job Request</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="building">Building:</label>
-          <input
-            type="text"
-            id="building"
-            name="building"
-            value={formData.building}
-            onChange={handleChange}
-            required
-          />
+    <div className="job-request-form-container">
+      <h2 className="form-title">New Job Request</h2>
+      {properties.length === 0 && (
+        <div className="alert-warning">
+          <p>
+            No properties found. Please{' '}
+            <Link to="/add-property" className="alert-link" onClick={() => window.scrollTo(0, 0)}>
+              add a property
+            </Link>
+            .
+          </p>
         </div>
-        <div>
-          <label htmlFor="clientName">Client Name:</label>
-          <input
-            type="text"
-            id="clientName"
-            name="clientName"
-            value={formData.clientName}
+      )}
+      <form className="job-request-form" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="property" className="form-label">
+            Property:
+          </label>
+          <select
+            id="property"
+            name="propertyId"
+            value={formData.propertyId}
             onChange={handleChange}
+            className="form-select"
             required
-          />
+            disabled={properties.length === 0}
+          >
+            <option value="">Select a Property</option>
+            {properties.map((property) => (
+              <option key={property._id} value={property._id}>
+                {property.propertyName}
+              </option>
+            ))}
+          </select>
         </div>
-        <div>
-          <label htmlFor="requestDetails">Request Details:</label>
+
+        <div className="form-group">
+          <label htmlFor="requestDetails" className="form-label">
+            Request Details:
+          </label>
           <textarea
             id="requestDetails"
             name="requestDetails"
             value={formData.requestDetails}
             onChange={handleChange}
+            className="form-textarea"
             required
-          />
+            placeholder="Describe your job request in detail"
+            rows="4"
+          ></textarea>
         </div>
-        <div>
-          <label htmlFor="contractSignerEmail">Contract Signer Email:</label>
-          <input
-            type="email"
-            id="contractSignerEmail"
-            name="contractSignerEmail"
-            value={formData.contractSignerEmail}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="contractSignerFirstName">Contract Signer First Name:</label>
-          <input
-            type="text"
-            id="contractSignerFirstName"
-            name="contractSignerFirstName"
-            value={formData.contractSignerFirstName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="contractSignerLastName">Contract Signer Last Name:</label>
-          <input
-            type="text"
-            id="contractSignerLastName"
-            name="contractSignerLastName"
-            value={formData.contractSignerLastName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="serviceType">Service Type:</label>
+
+        <div className="form-group">
+          <label htmlFor="serviceType" className="form-label">
+            Service Type:
+          </label>
           <input
             type="text"
             id="serviceType"
             name="serviceType"
             value={formData.serviceType}
             onChange={handleChange}
+            className="form-input"
+            required
+            placeholder="e.g., Plumbing, Electrical"
           />
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Submitting...' : 'Submit Job Request'}
-        </button>
+
+        <div className="form-group">
+          <label htmlFor="vendor" className="form-label">
+            Select Vendor:
+          </label>
+          <div className="vendor-selector-wrapper">
+            <VendorSelector selectedVendor={formData.vendorId} onVendorChange={handleVendorChange} />
+            <button
+              type="button"
+              className="add-vendor-button"
+              onClick={() => setIsAddVendorModalOpen(true)}
+            >
+              + Add New Vendor
+            </button>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit Job Request'}
+          </button>
+        </div>
       </form>
+
+      {isAddVendorModalOpen && (
+        <AddVendorModal
+          onClose={() => setIsAddVendorModalOpen(false)}
+          onVendorAdded={(newVendor) => {
+            handleVendorChange(newVendor._id);
+            setIsAddVendorModalOpen(false);
+            showNotification('Vendor added successfully', 'success');
+          }}
+        />
+      )}
     </div>
   );
 }
