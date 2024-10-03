@@ -7,6 +7,7 @@ import logger from './utils/logger.js';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import passport from 'passport';
+import { BearerStrategy } from 'passport-azure-ad';
 
 dotenv.config();
 
@@ -19,7 +20,6 @@ import authRoutes from './routes/auth.js';
 import usersRoutes from './routes/users.js';
 import contractTemplatesRoutes from './routes/contractTemplates.js';
 import propertiesRoutes from './routes/propertiesRoutes.js'; // Import propertiesRoutes
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,7 +74,6 @@ app.use('/api/contract-templates', contractTemplatesRoutes);
 app.use('/api/user', usersRoutes);
 app.use('/api/properties', propertiesRoutes); // Use propertiesRoutes
 
-
 // Wildcard route for handling 404s
 app.use('*', (req, res) => {
   console.log(`No route found for ${req.method} ${req.originalUrl}`);
@@ -91,6 +90,20 @@ app.use((err, req, res, next) => {
 });
 
 // Initialize Passport
+const options = {
+  identityMetadata: `https://login.microsoftonline.com/${process.env.TENANT_ID}/v2.0/.well-known/openid-configuration`,
+  clientID: process.env.AZURE_CLIENT_ID,
+  validateIssuer: true,
+  issuer: `https://sts.windows.net/${process.env.AZURE_TENANT_ID}/`,
+  passReqToCallback: false,
+  loggingLevel: 'info',
+  scope: ['profile', 'offline_access', 'https://graph.microsoft.com/mail.read']
+};
+
+passport.use(new BearerStrategy(options, (token, done) => {
+  done(null, token);
+}));
+
 app.use(passport.initialize());
 
 const startServer = async () => {

@@ -49,8 +49,8 @@ export const authorizeRoles = (...roles) => {
 
 // Passport Azure AD Bearer Strategy Configuration
 const options = {
-  identityMetadata: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0/.well-known/openid-configuration`,
-  clientID: process.env.AZURE_AD_CLIENT_ID,
+  identityMetadata: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/v2.0/.well-known/openid-configuration`,
+  clientID: process.env.AZURE_CLIENT_ID,
   audience: 'api://YOUR_BACKEND_CLIENT_ID', // Replace with your backend API client ID
   validateIssuer: true,
   loggingLevel: 'info',
