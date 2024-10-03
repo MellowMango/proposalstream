@@ -4,8 +4,8 @@ import { LogLevel } from "@azure/msal-browser";
 
 export const msalConfig = {
   auth: {
-    clientId: process.env.REACT_APP_CLIENT_ID, // Unified client ID or manage accordingly
-    authority: `https://${process.env.REACT_APP_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_TENANT_NAME}.onmicrosoft.com/B2C_1_signupsignin`, // Use policies as needed
+    clientId: process.env.REACT_APP_CLIENT_ID, // Unified client ID
+    authority: `https://${process.env.REACT_APP_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_TENANT_NAME}.onmicrosoft.com/B2C_1_signupsignin`, // Single user flow
     knownAuthorities: [`${process.env.REACT_APP_TENANT_NAME}.b2clogin.com`],
     redirectUri: process.env.REACT_APP_REDIRECT_URI,
   },
@@ -40,11 +40,16 @@ export const msalConfig = {
   },
 };
 
-// Define and export login requests for different scenarios
+// Define and export a single login request
+export const loginRequest = {
+  scopes: ['openid', 'profile', 'email', 'User.Read'], // Adjust scopes as needed
+};
+
+// **Added Below: Separate Login Requests for ProposalStream and MicrosoftProvider**
 export const loginRequestProposalStream = {
-  scopes: ['openid', 'profile', 'email', 'your_proposalstream_scope'],
+  scopes: ['openid', 'profile', 'email', 'User.Read', 'your_proposalstream_scope'], // Adjust scopes as needed
 };
 
 export const loginRequestMicrosoftProvider = {
-  scopes: ['openid', 'profile', 'User.Read'],
+  scopes: ['openid', 'profile', 'email', 'User.Read'], // Scopes for Microsoft
 };
