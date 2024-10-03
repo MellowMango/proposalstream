@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - proposalstream
 on:
   push:
     branches:
-      - f
+      - main
   workflow_dispatch:
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
           npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip release.zip ./ -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -43,7 +43,7 @@ jobs:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -53,13 +53,13 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.__clientidsecretname__ }}
-          tenant-id: ${{ secrets.__tenantidsecretname__ }}
-          subscription-id: ${{ secrets.__subscriptionidsecretname__ }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -68,3 +68,16 @@ jobs:
           app-name: 'proposalstream'
           slot-name: 'production'
           package: .
+
+      - name: Install Azure CLI
+        uses: azure/setup-azure-cli@v1
+
+      - name: 'Configure App Settings'
+        run: |
+          az webapp config appsettings set --name proposalstream --resource-group your-actual-resource-group --settings \
+            REACT_APP_PROPOSALSTREAM_CLIENT_ID=${{ secrets.REACT_APP_PROPOSALSTREAM_CLIENT_ID }} \
+            REACT_APP_PROPOSALSTREAM_TENANT_ID=${{ secrets.REACT_APP_PROPOSALSTREAM_TENANT_ID }} \
+            REACT_APP_PROPOSALSTREAM_TENANT_NAME=${{ secrets.REACT_APP_PROPOSALSTREAM_TENANT_NAME }} \
+            REACT_APP_MICROSOFT_PROVIDER_CLIENT_ID=${{ secrets.REACT_APP_MICROSOFT_PROVIDER_CLIENT_ID }} \
+            REACT_APP_MICROSOFT_PROVIDER_TENANT_ID=${{ secrets.REACT_APP_MICROSOFT_PROVIDER_TENANT_ID }} \
+            REACT_APP_MICROSOFT_PROVIDER_TENANT_NAME=${{ secrets.REACT_APP_MICROSOFT_PROVIDER_TENANT_NAME }}
