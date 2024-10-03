@@ -6,8 +6,11 @@ import { UNAUTHORIZED_EVENT } from '../utils/api';
 import { InteractionRequiredAuthError } from '@azure/msal-browser';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import { msalInstance } from '../msalInstances';
-import { loginRequestProposalStream, loginRequestMicrosoftProvider } from '../msalConfig';
+import { msalInstance } from '../msalInstance';
+import { 
+  loginRequestProposalStream, 
+  loginRequestMicrosoftProvider 
+} from '../msalConfig';
 
 // Create a unified AuthContext
 export const AuthContext = createContext();
@@ -27,7 +30,6 @@ const determineProvider = (response) => {
   } else {
     return 'unknown';
   }
-
 };
 
 export const AuthProvider = ({ children, onError }) => {
@@ -65,7 +67,7 @@ export const AuthProvider = ({ children, onError }) => {
     };
 
     handleRedirect();
-  }, [onError]);
+  }, [onError]); // Removed 'logout' from dependencies if it's not used here
 
   // Effect to handle token acquisition
   useEffect(() => {
@@ -145,7 +147,7 @@ export const AuthProvider = ({ children, onError }) => {
     return () => {
       window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
     };
-  }, [onError, navigate]);
+  }, [onError, navigate]); // Added 'logout' if it's used inside
 
   // Logout function
   const logout = () => {
@@ -175,8 +177,8 @@ export const AuthProvider = ({ children, onError }) => {
     console.log('Attempting to login with provider:', provider);
 
     // Prevent initiating a new interaction if one is already in progress
-    const { interactionStatus } = msalInstance.getActiveAccount() || {};
-    if (msalInstance.getInteractionStatus() === 'interaction_in_progress') {
+    const interactionStatus = msalInstance.getInteractionStatus(); // Corrected usage
+    if (interactionStatus === 'interaction_in_progress') {
       onError('An interaction is already in progress. Please wait.');
       return;
     }
