@@ -5,8 +5,7 @@
     "scripts": {
         "start": "cd backend && node index.js",
         "dev": "cd backend && nodemon index.js",
-        "test": "cd proposalstream-backend && NODE_OPTIONS=--experimental-vm-modules jest --no-cache --runInBand --detectOpenHandles"
-    },
+"test": "cd proposalstream-backend && NODE_OPTIONS=--experimental-vm-modules jest --no-cache --runInBand --detectOpenHandles"    },
     "devDependencies": {
         "concurrently": "^6.2.0"
     },
