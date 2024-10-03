@@ -44,7 +44,6 @@
     "pdfkit": "^0.15.0",
     "pizzip": "^3.1.7",
     "puppeteer": "^23.3.0",
-    "react-pdf": "^9.1.0",
     "winston": "^3.14.2"
   },
   "devDependencies": {
