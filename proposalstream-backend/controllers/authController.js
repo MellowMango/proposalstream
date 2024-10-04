@@ -157,3 +157,26 @@ export const registerAdmin = async (req, res) => {
     res.status(500).json({ message: 'Error registering admin', error: error.message });
   }
 };
+
+// Update onboarding status
+export const updateOnboarding = async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming user ID is available in req.user
+    const { hasOnboarded } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { hasOnboarded },
+      { new: true }
+    ).select('-password'); // Exclude password from the returned user
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.json({ message: 'Onboarding status updated.', user });
+  } catch (error) {
+    console.error('Error updating onboarding status:', error);
+    res.status(500).json({ message: 'Server error.' });
+  }
+};

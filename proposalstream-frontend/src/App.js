@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import MsalProviderWrapper from './providers/MsalProvider'; // Updated import
-import { AuthProvider } from './contexts/CombinedAuthContext'; // Combined Auth Context
+import MsalProviderWrapper from './providers/MsalProvider';
+import { AuthProvider } from './contexts/CombinedAuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import JobRequestForm from './components/JobRequestForm';
@@ -18,7 +18,7 @@ import ContractTemplateUpload from './components/ContractTemplateUpload';
 import AddProperty from './components/AddProperty';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
-import { msalInstanceProposalStream, msalInstanceMicrosoftProvider } from './msalInstance'; // Added imports
+import Onboarding from './components/Onboarding'; // Import the Onboarding component
 
 function App() {
   const [notification, setNotification] = React.useState(null);
@@ -29,18 +29,15 @@ function App() {
     setTimeout(() => setNotification(null), 5000);
   };
 
+  const handleError = (message) => {
+    showNotification(message, 'error');
+  };
+
   return (
-    <Router>
-      <ErrorBoundary>
-        {/* Use the unified MsalProviderWrapper */}
-        <MsalProviderWrapper>
-          <AuthProvider
-            onError={(error) => showNotification(`Authentication error: ${error}`, 'error')}
-            providers={{
-              proposalStream: msalInstanceProposalStream,
-              microsoftProvider: msalInstanceMicrosoftProvider,
-            }}
-          >
+    <MsalProviderWrapper>
+      <Router>
+        <AuthProvider onError={handleError}>
+          <ErrorBoundary>
             <div className="App">
               <Header />
               {/* Notification component for user feedback */}
@@ -67,7 +64,7 @@ function App() {
                     path="/"
                     element={
                       <ProtectedRoute
-                        allowedRoles={['client', 'admin', 'vendor']}
+                        allowedRoles={['client', 'vendor', 'admin']}
                         provider="proposalStream"
                       >
                         <Dashboard showNotification={showNotification} />
@@ -75,10 +72,21 @@ function App() {
                     }
                   />
                   <Route
+                    path="/onboarding"
+                    element={
+                      <ProtectedRoute
+                        allowedRoles={['client', 'vendor', 'admin']}
+                        provider="proposalStream"
+                      >
+                        <Onboarding showNotification={showNotification} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/job-request-form"
                     element={
                       <ProtectedRoute
-                        allowedRoles={['client', 'admin']}
+                        allowedRoles={['client', 'admin', 'vendor']}
                         provider="proposalStream"
                       >
                         <JobRequestForm showNotification={showNotification} />
@@ -162,14 +170,29 @@ function App() {
 
                   {/* Catch-All Route for 404 Not Found */}
                   <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute
+                        allowedRoles={['client', 'vendor', 'admin']}
+                        provider="proposalStream"
+                      >
+                        <Dashboard showNotification={showNotification} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/"
+                    element={<Navigate to="/dashboard" replace />}
+                  />
                 </Routes>
               </main>
               <Footer />
             </div>
-          </AuthProvider>
-        </MsalProviderWrapper>
-      </ErrorBoundary>
-    </Router>
+          </ErrorBoundary>
+        </AuthProvider>
+      </Router>
+    </MsalProviderWrapper>
   );
 }
 

@@ -1,11 +1,12 @@
 // proposalstream-frontend/src/components/Login.js
 
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/CombinedAuthContext'; // Unified Auth Context
+import { useAuth } from '../contexts/CombinedAuthContext';
+import { useLocation, Navigate } from 'react-router-dom';
 
 const Login = ({ showNotification, provider = 'proposalStream' }) => {
-  const { login } = useAuth(); // Destructure login function from AuthContext
-
+  const { login, user, isLoading } = useAuth();
+  const location = useLocation();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleLogin = async () => {
@@ -19,6 +20,16 @@ const Login = ({ showNotification, provider = 'proposalStream' }) => {
       setIsLoggingIn(false);
     }
   };
+
+  // If user is already logged in, redirect to intended page or home
+  if (user) {
+    const from = location.state?.from?.pathname || '/';
+    return <Navigate to={from} replace />;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Show loader while authentication status is being determined
+  }
 
   return (
     <div>

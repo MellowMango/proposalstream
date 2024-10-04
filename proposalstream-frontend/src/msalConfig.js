@@ -4,13 +4,13 @@ import { LogLevel } from "@azure/msal-browser";
 
 export const msalConfig = {
   auth: {
-    clientId: process.env.REACT_APP_CLIENT_ID, // Unified client ID
-    authority: `https://${process.env.REACT_APP_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_TENANT_NAME}.onmicrosoft.com/B2C_1_signupsignin`, // Single user flow
+    clientId: process.env.REACT_APP_CLIENT_ID, // Your Azure AD B2C Client ID
+    authority: `https://${process.env.REACT_APP_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_TENANT_NAME}.onmicrosoft.com/B2C_1_signupsignin`, // Your Azure AD B2C Sign-up/Sign-in policy
     knownAuthorities: [`${process.env.REACT_APP_TENANT_NAME}.b2clogin.com`],
-    redirectUri: process.env.REACT_APP_REDIRECT_URI,
+    redirectUri: "/", // Ensure this matches a valid route in your app
   },
   cache: {
-    cacheLocation: "sessionStorage",
+    cacheLocation: "sessionStorage", // or "localStorage"
     storeAuthStateInCookie: false,
   },
   system: {
@@ -20,18 +20,18 @@ export const msalConfig = {
         switch (level) {
           case LogLevel.Error:
             console.error(message);
-            break;
+            return;
           case LogLevel.Info:
             console.info(message);
-            break;
+            return;
           case LogLevel.Verbose:
             console.debug(message);
-            break;
+            return;
           case LogLevel.Warning:
             console.warn(message);
-            break;
+            return;
           default:
-            break;
+            return;
         }
       },
       piiLoggingEnabled: false,
@@ -40,16 +40,16 @@ export const msalConfig = {
   },
 };
 
-// Define and export a single login request
+// Define login request scopes
 export const loginRequest = {
-  scopes: ['openid', 'profile', 'email', 'User.Read'], // Adjust scopes as needed
+  scopes: ["openid", "profile", "User.Read"],
 };
 
-// **Added Below: Separate Login Requests for ProposalStream and MicrosoftProvider**
+// Define specific login requests if needed
 export const loginRequestProposalStream = {
-  scopes: ['openid', 'profile', 'email', 'User.Read', 'your_proposalstream_scope'], // Adjust scopes as needed
+  scopes: ['openid', 'profile', 'email', 'User.Read', 'your_proposalstream_scope'], // Adjust scopes
 };
 
 export const loginRequestMicrosoftProvider = {
-  scopes: ['openid', 'profile', 'email', 'User.Read'], // Scopes for Microsoft
+  scopes: ['openid', 'profile', 'email', 'User.Read'],
 };

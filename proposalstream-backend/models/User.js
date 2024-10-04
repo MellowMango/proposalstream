@@ -23,6 +23,11 @@ const UserSchema = new mongoose.Schema({
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor',
+  },
+  // Track onboarding status
+  hasOnboarded: {
+    type: Boolean,
+    default: false
   }
 });
 
