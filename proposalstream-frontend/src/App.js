@@ -1,9 +1,10 @@
 // proposalstream-frontend/src/App.js
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import MsalProviderWrapper from './providers/MsalProvider';
-import { AuthProvider } from './contexts/CombinedAuthContext';
+import { MsalProvider } from '@azure/msal-react';
+import msalInstance from './msalInstance'; // Import the dedicated MSAL instance
+import { AuthProvider } from './CombinedAuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import JobRequestForm from './components/JobRequestForm';
@@ -19,9 +20,10 @@ import AddProperty from './components/AddProperty';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import Onboarding from './components/Onboarding'; // Import the Onboarding component
+import AuthCallback from './AuthCallback'; // Import the AuthCallback component
 
 function App() {
-  const [notification, setNotification] = React.useState(null);
+  const [notification, setNotification] = useState(null);
 
   // Function to display notifications
   const showNotification = (message, type) => {
@@ -34,7 +36,7 @@ function App() {
   };
 
   return (
-    <MsalProviderWrapper>
+    <MsalProvider instance={msalInstance}>
       <Router>
         <AuthProvider onError={handleError}>
           <ErrorBoundary>
@@ -49,6 +51,12 @@ function App() {
               )}
               <main>
                 <Routes>
+                  {/* Auth Callback Route */}
+                  <Route
+                    path="/auth/callback"
+                    element={<AuthCallback />}
+                  />
+
                   {/* Public Routes */}
                   <Route
                     path="/login"
@@ -192,7 +200,7 @@ function App() {
           </ErrorBoundary>
         </AuthProvider>
       </Router>
-    </MsalProviderWrapper>
+    </MsalProvider>
   );
 }
 

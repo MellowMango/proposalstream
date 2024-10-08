@@ -1,16 +1,22 @@
-// proposalstream-frontend/src/msalConfig.js
+// src/msalConfig.js
 
 import { LogLevel } from "@azure/msal-browser";
 
+// Console logs for environment variables
+console.log("REACT_APP_PROPOSALSTREAM_CLIENT_ID:", process.env.REACT_APP_PROPOSALSTREAM_CLIENT_ID);
+console.log("REACT_APP_PROPOSALSTREAM_TENANT_NAME:", process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME);
+console.log("REACT_APP_POLICY:", process.env.REACT_APP_POLICY);
+console.log("REACT_APP_PROPOSALSTREAM_REDIRECT_URI:", process.env.REACT_APP_PROPOSALSTREAM_REDIRECT_URI);
+
 export const msalConfig = {
   auth: {
-    clientId: process.env.REACT_APP_CLIENT_ID, // Your Azure AD B2C Client ID
-    authority: `https://${process.env.REACT_APP_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_TENANT_NAME}.onmicrosoft.com/B2C_1_signupsignin`, // Your Azure AD B2C Sign-up/Sign-in policy
-    knownAuthorities: [`${process.env.REACT_APP_TENANT_NAME}.b2clogin.com`],
-    redirectUri: "/", // Ensure this matches a valid route in your app
+    clientId: process.env.REACT_APP_PROPOSALSTREAM_CLIENT_ID,
+    authority: `https://${process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME}.onmicrosoft.com/${process.env.REACT_APP_POLICY}`,
+    knownAuthorities: [`${process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME}.b2clogin.com`],
+    redirectUri: process.env.REACT_APP_PROPOSALSTREAM_REDIRECT_URI,
   },
   cache: {
-    cacheLocation: "sessionStorage", // or "localStorage"
+    cacheLocation: "sessionStorage",
     storeAuthStateInCookie: false,
   },
   system: {
@@ -35,21 +41,11 @@ export const msalConfig = {
         }
       },
       piiLoggingEnabled: false,
-      logLevel: LogLevel.Info,
+      logLevel: LogLevel.Verbose, // Set to Verbose for detailed logs
     },
   },
 };
 
-// Define login request scopes
 export const loginRequest = {
-  scopes: ["openid", "profile", "User.Read"],
-};
-
-// Define specific login requests if needed
-export const loginRequestProposalStream = {
-  scopes: ['openid', 'profile', 'email', 'User.Read', 'your_proposalstream_scope'], // Adjust scopes
-};
-
-export const loginRequestMicrosoftProvider = {
-  scopes: ['openid', 'profile', 'email', 'User.Read'],
+  scopes: ["openid", "profile", "offline_access"]
 };

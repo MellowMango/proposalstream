@@ -1,6 +1,6 @@
 import express from 'express';
 import * as authController from '../controllers/authController.js';
-import { authenticate, authorizeRoles, authenticateToken } from '../middleware/authMiddleware.js';
+import { authenticateToken, authorizeRoles } from '../middleware/authMiddleware.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
@@ -15,9 +15,9 @@ router.get('/me', authenticateToken, authController.getCurrentUser);
 // Register Admin Route
 router.post('/register-admin', authController.registerAdmin);
 
-// Secured Endpoint
-router.get('/secured-endpoint', authenticate, (req, res) => {
-  res.json({ message: 'This is a secured endpoint.', user: req.user });
-});
+// Update Onboarding Status Route (Protected)
+router.put('/update-onboarding', authenticateToken, authController.updateOnboarding);
+
+// Remove the secured-endpoint route as it's not defined in the controller
 
 export default router;

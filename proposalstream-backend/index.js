@@ -26,14 +26,20 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Initialize Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// === Updated CORS Configuration ===
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Frontend origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Include OPTIONS method
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true, // Allow credentials (cookies, authentication headers)
+};
 
-app.use(express.json({ extended: false }));
+// Apply CORS middleware with the specified options
+app.use(cors(corsOptions));
+// ================================
+
+// Middleware to parse JSON requests
+app.use(express.json());
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));

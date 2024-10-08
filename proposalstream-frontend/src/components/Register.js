@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/CombinedAuthContext';
+import { AuthContext } from '../CombinedAuthContext';
 import './Register.css'; // Import the CSS file for styling
 
 function Register({ showNotification }) {

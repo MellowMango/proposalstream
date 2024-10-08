@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import navLinks from '../utils/navLinks'; // Import the centralized navLinks
 import { FaUserCircle } from 'react-icons/fa'; // Import profile icon from react-icons
 import './Header.css'; // Import the CSS file for styling
-import { useAuth } from '../contexts/CombinedAuthContext'; // Updated import
+import { useAuth } from '../CombinedAuthContext'; // Updated import
 
 function Header() {
   // Access the unified authentication context

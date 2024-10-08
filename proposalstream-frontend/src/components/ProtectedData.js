@@ -2,7 +2,7 @@
 
    import React, { useEffect, useState } from 'react';
    import { useAxios } from '../utils/axiosInstance';
-   import { useAuth } from '../contexts/CombinedAuthContext';
+   import { useAuth } from '../CombinedAuthContext';
 
    const ProtectedData = () => {
      const axios = useAxios();

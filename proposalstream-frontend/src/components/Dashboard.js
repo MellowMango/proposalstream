@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { AuthContext } from '../contexts/CombinedAuthContext';
+import { AuthContext } from '../CombinedAuthContext';
 import navLinks from '../utils/navLinks'; // Import the centralized navLinks
 import './Dashboard.css'; // Import the CSS file for styling
 

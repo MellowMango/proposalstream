@@ -1,24 +1,18 @@
 // proposalstream-frontend/src/components/Login.js
 
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/CombinedAuthContext';
+import { useAuth } from '../CombinedAuthContext';
 import { useLocation, Navigate } from 'react-router-dom';
+import './Login.css'; // Import the CSS file
 
-const Login = ({ showNotification, provider = 'proposalStream' }) => {
-  const { login, user, isLoading } = useAuth();
+const Login = ({ showNotification }) => {
+  const { user, isLoading, login } = useAuth();
   const location = useLocation();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     setIsLoggingIn(true);
-    try {
-      await login(provider); // Initiate login with the specified provider
-      showNotification('Redirecting to login...', 'info'); // Notify user
-    } catch (error) {
-      showNotification(error.message, 'error'); // Notify on error
-    } finally {
-      setIsLoggingIn(false);
-    }
+    login();
   };
 
   // If user is already logged in, redirect to intended page or home
@@ -28,15 +22,24 @@ const Login = ({ showNotification, provider = 'proposalStream' }) => {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show loader while authentication status is being determined
+    return <div className="login-form">Loading...</div>;
   }
 
   return (
-    <div>
+    <div className="login-form">
       <h2>Login</h2>
-      <button onClick={handleLogin} disabled={isLoggingIn}>
-        Sign in with {provider === 'proposalStream' ? 'Azure AD B2C' : 'Microsoft'}
-      </button>
+      <div className="form-group">
+        <button 
+          className="login-button" 
+          onClick={handleLogin} 
+          disabled={isLoggingIn}
+        >
+          {isLoggingIn ? 'Signing in...' : 'Sign in with Azure AD B2C'}
+        </button>
+      </div>
+      <p className="register-prompt">
+        Don't have an account? Contact your administrator.
+      </p>
     </div>
   );
 };
