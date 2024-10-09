@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
-import msalInstance from './msalInstance'; // Import the dedicated MSAL instance
+import msalInstance from './msalInstance'; // Ensure msalInstance is correctly configured
 import { AuthProvider } from './CombinedAuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -19,10 +19,11 @@ import ContractTemplateUpload from './components/ContractTemplateUpload';
 import AddProperty from './components/AddProperty';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
-import Onboarding from './components/Onboarding'; // Import the Onboarding component
-import AuthCallback from './AuthCallback'; // Import the AuthCallback component
+import Onboarding from './components/Onboarding';
+import AuthCallback from './AuthCallback';
 
 function App() {
+  console.log("Rendering App component");
   const [notification, setNotification] = useState(null);
 
   // Function to display notifications
@@ -41,6 +42,7 @@ function App() {
         <AuthProvider onError={handleError}>
           <ErrorBoundary>
             <div className="App">
+              <p>App is rendering</p>
               <Header />
               {/* Notification component for user feedback */}
               {notification && (
@@ -69,7 +71,7 @@ function App() {
 
                   {/* Protected Routes */}
                   <Route
-                    path="/"
+                    path="/dashboard"
                     element={
                       <ProtectedRoute
                         allowedRoles={['client', 'vendor', 'admin']}
@@ -177,22 +179,7 @@ function App() {
                   />
 
                   {/* Catch-All Route for 404 Not Found */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'vendor', 'admin']}
-                        provider="proposalStream"
-                      >
-                        <Dashboard showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/"
-                    element={<Navigate to="/dashboard" replace />}
-                  />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
               <Footer />

@@ -3,7 +3,7 @@
 import { PublicClientApplication } from "@azure/msal-browser";
 import { msalConfig } from "./msalConfig";
 
-// Instantiate MSAL PublicClientApplication
+// Initialize MSAL instance
 const msalInstance = new PublicClientApplication(msalConfig);
 
 export default msalInstance;
