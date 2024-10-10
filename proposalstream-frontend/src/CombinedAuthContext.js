@@ -35,9 +35,10 @@ export const AuthProvider = ({ children, onError }) => {
         const msalInstance = new PublicClientApplication(msalConfig);
         await msalInstance.initialize();
         setMsalInstance(msalInstance);
+        console.log("MSAL initialized successfully");
       } catch (error) {
         console.error("Error initializing MSAL:", error);
-        handleError("Failed to initialize authentication.");
+        handleError("Failed to initialize authentication. Error: " + error.message);
       }
     };
 
@@ -91,60 +92,59 @@ export const AuthProvider = ({ children, onError }) => {
           }
           console.log("User ID:", userId);
 
+          const tokenRequest = {
+            scopes: ["openid", "profile", "offline_access"],
+            account: account,
+            forceRefresh: true
+          };
+
+          let result;
           try {
-            console.log("Attempting to acquire token silently...");
-            const tokenResponse = await msalInstance.acquireTokenSilent({
-              ...loginRequest,
-              account: account,
-            });
-
-            console.log("Token response:", tokenResponse);
-
-            if (tokenResponse && tokenResponse.accessToken) {
-              setAuthToken(tokenResponse.accessToken);
-              console.log("Token set successfully");
-            } else {
-              console.error("Token response is incomplete:", tokenResponse);
-              throw new Error("Incomplete token response");
+            result = await msalInstance.acquireTokenSilent(tokenRequest);
+            if (!result || !result.accessToken) {
+              console.log("Silent token acquisition failed, attempting interactive login...");
+              result = await msalInstance.acquireTokenPopup(tokenRequest);
             }
+          } catch (error) {
+            console.error("Token acquisition failed:", error);
+            throw error; // Rethrow to be caught by the outer try-catch
+          }
 
-            const userData = {
-              id: userId,
-              name: account.name,
-              email: account.username,
-              roles: account.idTokenClaims?.roles || [],
-              provider: 'proposalStream',
-              accessToken: tokenResponse.accessToken,
-            };
+          console.log("Token response:", result);
 
-            setUser(userData);
-            setAuthProvider('proposalStream');
+          if (!result || !result.accessToken) {
+            console.error("Incomplete token response:", result);
+            throw new Error("Incomplete token response");
+          }
 
-            try {
-              console.log("Checking onboarding status...");
-              const response = await axiosInstance.get(`/users/${userId}`);
-              console.log("Onboarding response:", response);
-              if (response.data.hasOnboarded) {
-                navigate('/dashboard');
-              } else {
-                navigate('/onboarding');
-              }
-            } catch (apiError) {
-              console.error("Error checking onboarding status:", apiError);
-              if (apiError.response && apiError.response.status === 401) {
-                handleError("Authentication failed. Please log in again.");
-                logout();
-              } else {
-                handleError("Failed to verify onboarding status.");
-              }
-            }
-          } catch (tokenError) {
-            console.error("Error acquiring token:", tokenError);
-            if (tokenError instanceof InteractionRequiredAuthError) {
-              console.log("Interaction required, initiating login redirect...");
-              msalInstance.loginRedirect(loginRequest);
+          const userData = {
+            id: userId,
+            name: account.name,
+            email: account.username,
+            roles: account.idTokenClaims?.roles || [],
+            provider: 'proposalStream',
+            accessToken: result.accessToken,
+          };
+
+          setUser(userData);
+          setAuthProvider('proposalStream');
+
+          try {
+            console.log("Checking onboarding status...");
+            const response = await axiosInstance.get(`/users/${userId}`);
+            console.log("Onboarding response:", response);
+            if (response.data.hasOnboarded) {
+              navigate('/dashboard');
             } else {
-              throw tokenError;
+              navigate('/onboarding');
+            }
+          } catch (apiError) {
+            console.error("Error checking onboarding status:", apiError);
+            if (apiError.response && apiError.response.status === 401) {
+              handleError("Authentication failed. Please log in again.");
+              logout();
+            } else {
+              handleError("Failed to verify onboarding status.");
             }
           }
         } else {

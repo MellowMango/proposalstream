@@ -14,9 +14,10 @@ export const msalConfig = {
     authority: `https://${process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME}.onmicrosoft.com/${process.env.REACT_APP_POLICY}`,
     knownAuthorities: [`${process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME}.b2clogin.com`],
     redirectUri: process.env.REACT_APP_PROPOSALSTREAM_REDIRECT_URI,
+    navigateToLoginRequestUrl: true,
   },
   cache: {
-    cacheLocation: "sessionStorage",
+    cacheLocation: "localStorage",
     storeAuthStateInCookie: false,
   },
   system: {
@@ -44,6 +45,17 @@ export const msalConfig = {
       logLevel: LogLevel.Verbose, // Set to Verbose for detailed logs
     },
   },
+};
+
+// Optional: Configure additional request objects for different scenarios
+export const silentRequest = {
+  scopes: ["openid", "profile", "offline_access"],
+  forceRefresh: false
+};
+
+export const tokenRequest = {
+  scopes: ["openid", "profile", "offline_access"],
+  forceRefresh: false
 };
 
 export const loginRequest = {

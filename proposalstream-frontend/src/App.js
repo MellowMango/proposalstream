@@ -21,6 +21,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import Onboarding from './components/Onboarding';
 import AuthCallback from './AuthCallback';
+import { HomePage } from './components/HomePage';
+import './App.css'; // Ensure App.css is imported
 
 function App() {
   console.log("Rendering App component");
@@ -36,23 +38,38 @@ function App() {
     showNotification(message, 'error');
   };
 
+  // Define routes where the Header should be shown
+  const routesWithHeader = [
+    '/dashboard',
+    '/onboarding',
+    '/job-request-form',
+    '/add-property',
+    '/job-request-management',
+    '/contract-management',
+    '/admin/user-management',
+    '/contract-template-upload',
+    '/microsoft-dashboard'
+  ];
+
   return (
     <MsalProvider instance={msalInstance}>
       <Router>
         <AuthProvider onError={handleError}>
           <ErrorBoundary>
             <div className="App">
-              <p>App is rendering</p>
-              <Header />
-              {/* Notification component for user feedback */}
+              {/* Conditionally render Header based on current route */}
+              {routesWithHeader.includes(window.location.pathname) && <Header />}
               {notification && (
                 <Notification
                   message={notification.message}
                   type={notification.type}
                 />
               )}
-              <main>
+              <main className="main-content">
                 <Routes>
+                  {/* Add the HomePage route */}
+                  <Route path="/" element={<HomePage />} />
+
                   {/* Auth Callback Route */}
                   <Route
                     path="/auth/callback"
@@ -179,7 +196,7 @@ function App() {
                   />
 
                   {/* Catch-All Route for 404 Not Found */}
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>
               <Footer />

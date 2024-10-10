@@ -1,7 +1,23 @@
+/* Reset default margins and paddings */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures the App takes full viewport height */
   text-align: center;
 }
 
+.main-content {
+  flex: 1; /* Allows the main content to grow and push the footer to the bottom */
+  width: 100%;
+}
+
+/* Remove or adjust styles that might conflict with the flex layout */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -15,7 +31,7 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  /* Removed min-height to prevent conflicts */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,3 +52,5 @@
     transform: rotate(360deg);
   }
 }
+
+/* Optional: Hide default App logo or header if not used */
