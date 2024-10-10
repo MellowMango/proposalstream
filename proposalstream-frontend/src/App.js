@@ -1,12 +1,11 @@
 // proposalstream-frontend/src/App.js
 
 import React, { useState } from 'react';
+import { MsalProvider } from "@azure/msal-react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { MsalProvider } from '@azure/msal-react';
-import msalInstance from './msalInstance'; // Ensure msalInstance is correctly configured
+import msalInstance from './msalInstance';
 import { AuthProvider } from './CombinedAuthContext';
 import Header from './components/Header';
-import Footer from './components/Footer';
 import JobRequestForm from './components/JobRequestForm';
 import ContractManagement from './components/ContractManagement';
 import JobRequestManagement from './components/JobRequestManagement';
@@ -21,8 +20,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import Onboarding from './components/Onboarding';
 import AuthCallback from './AuthCallback';
-import { HomePage } from './components/HomePage';
-import './App.css'; // Ensure App.css is imported
+import HomePage from './components/HomePage';
+import './App.css';
+import { protectedRoutes } from './routeConfig'; // Import protected routes
 
 function App() {
   console.log("Rendering App component");
@@ -39,17 +39,7 @@ function App() {
   };
 
   // Define routes where the Header should be shown
-  const routesWithHeader = [
-    '/dashboard',
-    '/onboarding',
-    '/job-request-form',
-    '/add-property',
-    '/job-request-management',
-    '/contract-management',
-    '/admin/user-management',
-    '/contract-template-upload',
-    '/microsoft-dashboard'
-  ];
+  const routesWithHeader = protectedRoutes; // Reuse protectedRoutes for consistency
 
   return (
     <MsalProvider instance={msalInstance}>
@@ -67,33 +57,16 @@ function App() {
               )}
               <main className="main-content">
                 <Routes>
-                  {/* Add the HomePage route */}
-                  <Route path="/" element={<HomePage />} />
-
-                  {/* Auth Callback Route */}
-                  <Route
-                    path="/auth/callback"
-                    element={<AuthCallback />}
-                  />
-
                   {/* Public Routes */}
-                  <Route
-                    path="/login"
-                    element={<Login showNotification={showNotification} />}
-                  />
-                  <Route
-                    path="/register"
-                    element={<Register showNotification={showNotification} provider="proposalStream" />}
-                  />
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<Login showNotification={showNotification} />} />
+                  <Route path="/register" element={<Register showNotification={showNotification} provider="proposalStream" />} />
 
                   {/* Protected Routes */}
                   <Route
                     path="/dashboard"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'vendor', 'admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'vendor', 'admin']} provider="proposalStream">
                         <Dashboard showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -101,10 +74,7 @@ function App() {
                   <Route
                     path="/onboarding"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'vendor', 'admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'vendor', 'admin']} provider="proposalStream">
                         <Onboarding showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -112,10 +82,7 @@ function App() {
                   <Route
                     path="/job-request-form"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'admin', 'vendor']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'admin', 'vendor']} provider="proposalStream">
                         <JobRequestForm showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -123,10 +90,7 @@ function App() {
                   <Route
                     path="/add-property"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
                         <AddProperty showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -134,10 +98,7 @@ function App() {
                   <Route
                     path="/job-request-management"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['vendor', 'admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['vendor', 'admin']} provider="proposalStream">
                         <JobRequestManagement showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -145,10 +106,7 @@ function App() {
                   <Route
                     path="/contract-management"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
                         <ContractManagement showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -156,10 +114,7 @@ function App() {
                   <Route
                     path="/admin/user-management"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['admin']} provider="proposalStream">
                         <UserManagement showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -167,10 +122,7 @@ function App() {
                   <Route
                     path="/contract-template-upload"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'admin']}
-                        provider="proposalStream"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
                         <ContractTemplateUpload showNotification={showNotification} />
                       </ProtectedRoute>
                     }
@@ -186,20 +138,19 @@ function App() {
                   <Route
                     path="/microsoft-dashboard"
                     element={
-                      <ProtectedRoute
-                        allowedRoles={['client', 'admin', 'vendor']}
-                        provider="microsoftProvider"
-                      >
+                      <ProtectedRoute allowedRoles={['client', 'admin', 'vendor']} provider="microsoftProvider">
                         <Dashboard showNotification={showNotification} />
                       </ProtectedRoute>
                     }
                   />
 
+                  {/* Auth Callback Route */}
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+
                   {/* Catch-All Route for 404 Not Found */}
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>
-              <Footer />
             </div>
           </ErrorBoundary>
         </AuthProvider>

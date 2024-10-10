@@ -10,7 +10,7 @@ import rectangle59 from '../assets/images/rectangle-59.png';
 import rectangle from '../assets/images/rectangle.png';
 import "./HomePage.css";
 
-export const HomePage = () => {
+const HomePage = () => {
   return (
     <div className="home-page">
       {/* Navigation Bar */}
@@ -223,3 +223,5 @@ export const HomePage = () => {
     </div>
   );
 };
+
+export default HomePage;

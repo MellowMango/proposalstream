@@ -1,45 +1,49 @@
 // proposalstream-frontend/src/components/Login.js
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../CombinedAuthContext';
 import { useLocation, Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './Login.css'; // Import the CSS file
 
-const Login = ({ showNotification, provider }) => {
-  const { user, isLoading, login, error } = useAuth();
+const Login = ({ showNotification }) => {
+  const { user, isLoading, error, initiateAzureLogin } = useAuth();
   const location = useLocation();
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  useEffect(() => {
+    console.log('Login component state:', { user, isLoading, error });
+  }, [user, isLoading, error]);
 
   const handleLogin = () => {
-    setIsLoggingIn(true);
-    console.log(`Initiating login with provider: ${provider}`);
-    login(provider);
-    // Since loginRedirect initiates a redirect, there's no need for .then() or .catch()
-    // Handle loading state accordingly
-    setIsLoggingIn(false);
+    console.log('Initiating Azure login');
+    initiateAzureLogin();
   };
 
   // If user is already logged in, redirect to intended page or home
   if (user) {
     const from = location.state?.from?.pathname || '/';
+    console.log('User is logged in, redirecting to:', from);
     return <Navigate to={from} replace />;
   }
 
   if (isLoading) {
-    return <div className="login-form">Loading...</div>;
+    console.log('Login component is in loading state');
+    return <div className="login-form">
+      <p>Loading... (isLoading: {isLoading.toString()})</p>
+      <p>If this persists, please try refreshing the page.</p>
+    </div>;
   }
 
+  console.log('Rendering login form');
   return (
     <div className="login-form">
       <h2>Login</h2>
       <div className="form-group">
         <button 
           className="login-button" 
-          onClick={handleLogin} 
-          disabled={isLoggingIn}
+          onClick={handleLogin}
         >
-          {isLoggingIn ? 'Signing in...' : `Sign in with ${provider}`}
+          Sign in with Azure AD B2C
         </button>
       </div>
       <p className="register-prompt">
@@ -52,11 +56,6 @@ const Login = ({ showNotification, provider }) => {
 
 Login.propTypes = {
   showNotification: PropTypes.func.isRequired,
-  provider: PropTypes.string,
-};
-
-Login.defaultProps = {
-  provider: 'proposalStream',
 };
 
 export default Login;

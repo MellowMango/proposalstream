@@ -1,9 +1,8 @@
 // src/msalInstance.js
 
-import { PublicClientApplication } from "@azure/msal-browser";
-import { msalConfig } from "./msalConfig";
+import { PublicClientApplication } from '@azure/msal-browser';
+import msalConfig from './msalConfig'; // Ensure the path is correct
 
-// Initialize MSAL instance
 const msalInstance = new PublicClientApplication(msalConfig);
 
 export default msalInstance;

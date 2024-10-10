@@ -9,54 +9,47 @@ const ProtectedRoute = ({ children, allowedRoles, provider }) => {
   const { user, authProvider, isLoading } = useAuth();
   const location = useLocation();
 
-  console.log('ProtectedRoute - isLoading:', isLoading);
-  console.log('ProtectedRoute - user:', user);
-  console.log('ProtectedRoute - authProvider:', authProvider);
+  const isAuthenticated = () => user?.id;
+  const hasRequiredProvider = () => !provider || authProvider === provider;
+  const needsOnboarding = () => user.needsOnboarding;
+  const hasRequiredRole = () => {
+    if (allowedRoles.length === 0) return true;
+    const userRoles = Array.isArray(user.roles) ? user.roles : [];
+    return allowedRoles.some((role) => userRoles.includes(role));
+  };
 
-  // While loading, render a loader
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // If no user is authenticated, redirect to login
-  if (!user?.id) {
-    console.log('ProtectedRoute - No authenticated user found. Redirecting to /login');
+  if (!isAuthenticated()) {
+    console.log('ProtectedRoute - User is not authenticated. Redirecting to /login.');
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  // If provider is specified and doesn't match, redirect accordingly
-  if (provider && authProvider !== provider) {
-    console.log(`ProtectedRoute - Provider mismatch. Expected: ${provider}, Found: ${authProvider}`);
+  if (!hasRequiredProvider()) {
+    console.log(`ProtectedRoute - Provider mismatch. Expected: ${provider}, Found: ${authProvider}. Redirecting accordingly.`);
     switch (provider) {
       case 'proposalStream':
         return <Navigate to="/login" replace />;
       case 'microsoftProvider':
         return <Navigate to="/microsoft-login" replace />;
       default:
-        console.warn(`ProtectedRoute - Unknown provider: ${provider}. Redirecting to /login`);
+        console.warn(`Unknown provider: ${provider}. Redirecting to /login`);
         return <Navigate to="/login" replace />;
     }
   }
 
-  // Check if user needs onboarding
-  if (user.needsOnboarding) {
-    console.log('ProtectedRoute - User needs onboarding. Redirecting to /onboarding');
+  if (needsOnboarding()) {
+    console.log('ProtectedRoute - User needs onboarding. Redirecting to /onboarding.');
     return <Navigate to="/onboarding" replace />;
   }
 
-  // If roles are specified, check if user has at least one required role
-  if (Array.isArray(allowedRoles) && allowedRoles.length > 0) {
-    const userRoles = Array.isArray(user.roles) ? user.roles : [];
-    const hasRequiredRole = allowedRoles.some((role) => userRoles.includes(role));
-
-    if (!hasRequiredRole) {
-      console.warn(`ProtectedRoute - User lacks required roles: ${allowedRoles.join(', ')}`);
-      return <Navigate to="/unauthorized" replace />;
-    }
+  if (!hasRequiredRole()) {
+    console.log(`ProtectedRoute - User lacks required roles: ${allowedRoles.join(', ')}. Redirecting to /unauthorized.`);
+    return <Navigate to="/unauthorized" replace />;
   }
 
-  // If all checks pass, render the children components
-  console.log('ProtectedRoute - Access granted. Rendering children.');
   return children;
 };
 

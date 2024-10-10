@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MsalProvider } from '@azure/msal-react';
-import { msalInstance } from '../msalInstance';
+import msalInstance from '../msalInstance'; // Corrected import
 
 const MsalProviderWrapper = ({ children }) => {
   return (
