@@ -7,6 +7,11 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px; /* Adjust as needed */
 }
 
 /* Form Heading */
@@ -59,6 +64,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    min-width: 250px;
 }
 
 .login-button:hover {
@@ -69,10 +75,16 @@
     transform: scale(0.98);
 }
 
+/* Style for disabled button state */
+.login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
 /* Register Prompt */
 .register-prompt {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 20px;
     color: #555555;
     font-size: 0.95rem;
 }

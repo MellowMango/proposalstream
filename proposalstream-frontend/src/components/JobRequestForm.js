@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../contexts/CombinedAuthContext';
+import { AuthContext } from '../CombinedAuthContext';
 import { Link } from 'react-router-dom';
 import VendorSelector from './VendorSelector';
 import AddVendorModal from './AddVendorModal';

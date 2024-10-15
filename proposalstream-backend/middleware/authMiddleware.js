@@ -1,7 +1,12 @@
 import jwt from 'jsonwebtoken';
+import { expressjwt } from 'express-jwt'; // Renamed from 'jwt' to 'expressjwt'
 import logger from '../utils/logger.js';
 import passport from 'passport';
 import { BearerStrategy } from 'passport-azure-ad';
+import jwksRsa from 'jwks-rsa';
+
+// Use destructuring to get the verify function from jwt
+const { verify } = jwt;
 
 // Authenticate Token Middleware
 export const authenticateToken = (req, res, next) => {
@@ -64,3 +69,48 @@ passport.use(new BearerStrategy(options, (token, done) => {
 
 // Export the authenticate middleware using Passport
 export const authenticate = passport.authenticate('oauth-bearer', { session: false });
+
+// Authenticate Azure Token Middleware
+const client = jwksRsa({
+  jwksUri: `https://login.microsoftonline.com/common/discovery/v2.0/keys`
+});
+
+export const authenticateAzureToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+
+  const token = authHeader.split(' ')[1];
+  
+  verify(token, getKey, { algorithms: ['RS256'] }, (err, decodedToken) => {
+    if (err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    req.user = decodedToken;
+    next();
+  });
+};
+
+function getKey(header, callback) {
+  client.getSigningKey(header.kid, (err, key) => {
+    if (err) {
+      return callback(err);
+    }
+    const signingKey = key.publicKey || key.rsaPublicKey;
+    callback(null, signingKey);
+  });
+}
+
+// Update the middleware to use `expressjwt` instead of `expressJwt`
+const authMiddleware = expressjwt({ 
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AZURE_AD_B2C_TENANT_NAME}.b2clogin.com/${process.env.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${process.env.AZURE_AD_B2C_POLICY_NAME}/discovery/v2.0/keys`
+  }),
+  audience: process.env.AZURE_AD_B2C_CLIENT_ID,
+  issuer: `https://${process.env.AZURE_AD_B2C_TENANT_NAME}.b2clogin.com/${process.env.AZURE_AD_B2C_TENANT_ID}/v2.0/`,
+  algorithms: ['RS256']
+});
+
+export default authMiddleware; // Use ESM export

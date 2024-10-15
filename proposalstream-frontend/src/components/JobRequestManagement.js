@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import Modal from './Modal';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../contexts/CombinedAuthContext';
+import { AuthContext } from '../CombinedAuthContext';
 import VendorSelector from './VendorSelector';
 import './JobRequestManagement.css';
 

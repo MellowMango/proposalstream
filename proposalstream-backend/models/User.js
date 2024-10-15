@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'; // Changed from 'bcryptjs' to 'bcrypt'
 
 const UserSchema = new mongoose.Schema({
+  oid: { type: String, required: true, unique: true },
   email: {
     type: String,
     required: true,
@@ -14,6 +15,10 @@ const UserSchema = new mongoose.Schema({
     required: true,
     select: false // Exclude password by default
   },
+  name: {
+    type: String,
+    required: true
+  },
   role: {
     type: String,
     enum: ['client', 'vendor', 'admin'],
@@ -23,6 +28,11 @@ const UserSchema = new mongoose.Schema({
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor',
+  },
+  // Track onboarding status
+  hasOnboarded: {
+    type: Boolean,
+    default: false
   }
 });
 

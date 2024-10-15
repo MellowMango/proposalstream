@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom';
 import navLinks from '../utils/navLinks'; // Import the centralized navLinks
 import { FaUserCircle } from 'react-icons/fa'; // Import profile icon from react-icons
 import './Header.css'; // Import the CSS file for styling
-import { useAuth } from '../contexts/CombinedAuthContext'; // Updated import
+import { useAuth } from '../CombinedAuthContext'; // Updated import
 
 function Header() {
   // Access the unified authentication context
-  const { user, authProvider, logout, login } = useAuth();
+  const { user, logout, initiateAzureLogin } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -71,11 +71,6 @@ function Header() {
       const includeLinks = ['Admin Panel', 'Settings']; // Example additional links
       return hasRole && includeLinks.includes(link.name);
     });
-  };
-
-  const handleLogin = (provider) => {
-    console.log(`Initiating login via ${provider}`);
-    login(provider);
   };
 
   const handleLogout = () => {
@@ -146,25 +141,12 @@ function Header() {
               )}
             </div>
           ) : (
-            <ul className="nav-user">
-              <li>
-                <button
-                  onClick={() => handleLogin('proposalStream')}
-                  className="login-button"
-                >
-                  Login with ProposalStream
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleLogin('microsoftProvider')}
-                  className="login-button"
-                >
-                  Login with Microsoft
-                </button>
-              </li>
-              {/* If you have email/password login, you can add another button here */}
-            </ul>
+            <button
+              onClick={initiateAzureLogin}
+              className="login-button"
+            >
+              Login
+            </button>
           )}
         </div>
       </nav>

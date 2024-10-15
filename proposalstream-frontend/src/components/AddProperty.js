@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../contexts/CombinedAuthContext';
+import { AuthContext } from '../CombinedAuthContext';
 import './AddProperty.css'; // Ensure this CSS file exists and is styled appropriately
 
 function AddProperty({ showNotification }) {

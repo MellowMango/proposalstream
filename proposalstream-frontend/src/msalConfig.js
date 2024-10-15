@@ -1,55 +1,41 @@
-// proposalstream-frontend/src/msalConfig.js
+// src/msalConfig.js
 
 import { LogLevel } from "@azure/msal-browser";
 
-export const msalConfig = {
+// Console logs for environment variables
+console.log("REACT_APP_PROPOSALSTREAM_CLIENT_ID:", process.env.REACT_APP_PROPOSALSTREAM_CLIENT_ID);
+console.log("REACT_APP_PROPOSALSTREAM_TENANT_NAME:", process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME);
+console.log("REACT_APP_POLICY:", process.env.REACT_APP_POLICY);
+console.log("REACT_APP_PROPOSALSTREAM_REDIRECT_URI:", process.env.REACT_APP_PROPOSALSTREAM_REDIRECT_URI);
+
+const tenantName = process.env.REACT_APP_PROPOSALSTREAM_TENANT_NAME.replace('.onmicrosoft.com', '');
+
+const msalConfig = {
   auth: {
-    clientId: process.env.REACT_APP_CLIENT_ID, // Unified client ID
-    authority: `https://${process.env.REACT_APP_TENANT_NAME}.b2clogin.com/${process.env.REACT_APP_TENANT_NAME}.onmicrosoft.com/B2C_1_signupsignin`, // Single user flow
-    knownAuthorities: [`${process.env.REACT_APP_TENANT_NAME}.b2clogin.com`],
-    redirectUri: process.env.REACT_APP_REDIRECT_URI,
+    clientId: process.env.REACT_APP_PROPOSALSTREAM_CLIENT_ID,
+    authority: `https://${tenantName}.b2clogin.com/${tenantName}.onmicrosoft.com/${process.env.REACT_APP_POLICY}`,
+    redirectUri: process.env.REACT_APP_PROPOSALSTREAM_REDIRECT_URI, // Use the environment variable
+    knownAuthorities: [`${tenantName}.b2clogin.com`],
   },
   cache: {
-    cacheLocation: "sessionStorage",
-    storeAuthStateInCookie: false,
-  },
-  system: {
-    loggerOptions: {
-      loggerCallback: (level, message, containsPii) => {
-        if (containsPii) return;
-        switch (level) {
-          case LogLevel.Error:
-            console.error(message);
-            break;
-          case LogLevel.Info:
-            console.info(message);
-            break;
-          case LogLevel.Verbose:
-            console.debug(message);
-            break;
-          case LogLevel.Warning:
-            console.warn(message);
-            break;
-          default:
-            break;
-        }
-      },
-      piiLoggingEnabled: false,
-      logLevel: LogLevel.Info,
-    },
+    cacheLocation: 'localStorage', // or 'sessionStorage'
+    storeAuthStateInCookie: false, // Set to true if issues arise on IE11 or Edge
   },
 };
 
-// Define and export a single login request
+// Add this for debugging
+console.log("Authority URL:", msalConfig.auth.authority);
+console.log("Known Authorities:", msalConfig.auth.knownAuthorities);
+console.log("Redirect URI:", msalConfig.auth.redirectUri);
+
+export default msalConfig;
+
+// Updated loginRequest scopes for redirect-based authentication
 export const loginRequest = {
-  scopes: ['openid', 'profile', 'email', 'User.Read'], // Adjust scopes as needed
-};
-
-// **Added Below: Separate Login Requests for ProposalStream and MicrosoftProvider**
-export const loginRequestProposalStream = {
-  scopes: ['openid', 'profile', 'email', 'User.Read', 'your_proposalstream_scope'], // Adjust scopes as needed
-};
-
-export const loginRequestMicrosoftProvider = {
-  scopes: ['openid', 'profile', 'email', 'User.Read'], // Scopes for Microsoft
+  scopes: [
+    "openid",
+    "profile",
+    "offline_access",
+    "https://proposalstreamb2c.onmicrosoft.com/c2f76643-7852-4308-adfc-99538cdee2c5/Files.Read"
+  ],
 };
