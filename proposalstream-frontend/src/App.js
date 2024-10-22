@@ -1,9 +1,9 @@
 // proposalstream-frontend/src/App.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MsalProvider } from "@azure/msal-react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import msalInstance from './msalInstance';
+import msalInstance from './config/msalInstance';
 import { AuthProvider } from './CombinedAuthContext';
 import Header from './components/Header';
 import JobRequestForm from './components/JobRequestForm';
@@ -22,7 +22,7 @@ import Onboarding from './components/Onboarding';
 import AuthCallback from './AuthCallback';
 import HomePage from './components/HomePage';
 import './App.css';
-import { protectedRoutes } from './routeConfig'; // Import protected routes
+import { protectedRoutes } from './routeConfig';
 
 function App() {
   console.log("Rendering App component");
@@ -38,8 +38,23 @@ function App() {
     showNotification(message, 'error');
   };
 
+  // Handle global unauthorized event
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      showNotification('Session expired. Please log in again.', 'error');
+      // Optionally, redirect to login
+      window.location.href = '/login';
+    };
+
+    window.addEventListener('UNAUTHORIZED_EVENT', handleUnauthorized);
+
+    return () => {
+      window.removeEventListener('UNAUTHORIZED_EVENT', handleUnauthorized);
+    };
+  }, []);
+
   // Define routes where the Header should be shown
-  const routesWithHeader = protectedRoutes; // Reuse protectedRoutes for consistency
+  const routesWithHeader = protectedRoutes;
 
   return (
     <MsalProvider instance={msalInstance}>

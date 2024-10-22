@@ -16,7 +16,7 @@ const msalConfig = {
     redirectUri: process.env.REACT_APP_PROPOSALSTREAM_REDIRECT_URI, // Redirect URI
   },
   cache: {
-    cacheLocation: "localStorage", // Cache location
+    cacheLocation: "sessionStorage", // Changed from 'localStorage' to 'sessionStorage' for enhanced security
     storeAuthStateInCookie: false, // Set to true for IE11
   },
   system: {

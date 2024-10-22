@@ -4,9 +4,9 @@ import React, { createContext, useEffect, useState, useContext, useCallback } fr
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMsal } from "@azure/msal-react";
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
-import { loginRequest } from './msalConfig'; // Ensure the path is correct
-import axiosInstance, { setAuthToken } from './utils/axiosInstance'; // Ensure the path is correct
-import { protectedRoutes } from './routeConfig'; // Ensure the path is correct
+import { loginRequest } from './config/msalConfig';
+import axiosInstance from './utils/axiosInstance';
+import { protectedRoutes } from './routeConfig';
 
 export const AuthContext = createContext();
 
@@ -14,21 +14,30 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children, onError }) => {
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
+  const location = useLocation();
   const { instance, accounts, inProgress } = useMsal();
   const isAuthenticated = accounts && accounts.length > 0;
 
   const [user, setUser] = useState(null);
   const [authProvider, setAuthProvider] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Initialized to false
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [accessToken, setAccessToken] = useState(null); // Centralized access token
 
   const handleError = useCallback((message) => {
     console.error(message);
     setError(message);
     if (onError) onError(message);
   }, [onError]);
+
+  // Centralized method to handle user and token
+  const handleAuthenticated = (userData, token) => {
+    setUser(userData);
+    setAccessToken(token);
+    // Set token in Axios
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  };
 
   const logout = useCallback(() => {
     if (isLoggingOut || !instance) return;
@@ -42,8 +51,8 @@ export const AuthProvider = ({ children, onError }) => {
     }).finally(() => {
       setIsLoggingOut(false);
       console.log("Logout process completed.");
+      handleAuthenticated(null, null); // Clear user and token on logout
     });
-    setAuthToken(null);
   }, [instance, handleError, isLoggingOut]);
 
   const login = useCallback(() => {
@@ -83,8 +92,9 @@ export const AuthProvider = ({ children, onError }) => {
     // Only initialize authentication if the current path is protected
     if (!isCurrentPathProtected()) {
       console.log(`Current path (${location.pathname}) is not protected. Skipping authentication initialization.`);
+      setUser(null);
       setAuthProvider(null);
-      setAuthToken(null);
+      setAccessToken(null);
       return;
     }
 
@@ -144,18 +154,20 @@ export const AuthProvider = ({ children, onError }) => {
             throw new Error("Incomplete token response");
           }
 
+          // Centralize token management
+          setAccessToken(result.accessToken);
+          axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${result.accessToken}`;
+
           const userData = {
             id: userId,
             name: account.name,
             email: account.username,
             roles: account.idTokenClaims?.roles || [],
             provider: 'proposalStream',
-            accessToken: result.accessToken,
           };
 
           setUser(userData);
           setAuthProvider('proposalStream');
-          setAuthToken(result.accessToken); // Ensure token is set
 
           try {
             console.log("Checking onboarding status...");
@@ -180,11 +192,10 @@ export const AuthProvider = ({ children, onError }) => {
         } else {
           console.log("User is not authenticated or no accounts found");
           setAuthProvider(null);
-          setAuthToken(null);
+          setAccessToken(null);
         }
       } catch (error) {
         console.error("Authentication initialization error:", error);
-        // Only set error if on a protected route
         if (isCurrentPathProtected()) {
           handleError(error.message);
         }
@@ -198,7 +209,7 @@ export const AuthProvider = ({ children, onError }) => {
   }, [instance, inProgress, isAuthenticated, accounts, navigate, handleError, logout, isCurrentPathProtected, location.pathname]);
 
   return (
-    <AuthContext.Provider value={{ user, authProvider, login, logout, isLoading, error, initiateAzureLogin }}>
+    <AuthContext.Provider value={{ user, authProvider, login, logout, isLoading, error, initiateAzureLogin, accessToken }}>
       {children}
     </AuthContext.Provider>
   );

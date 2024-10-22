@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance'; // Updated import
 import Modal from './Modal';
 import { getBackendUrl } from '../utils/api';
 import { AuthContext } from '../CombinedAuthContext';
@@ -21,15 +21,7 @@ function JobRequestManagement({ showNotification }) {
     try {
       setLoading(true);
       const baseUrl = await getBackendUrl();
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      const response = await axios.get(`${baseUrl}/api/jobs?populate=proposal`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axiosInstance.get(`${baseUrl}/api/jobs?populate=proposal`);
       if (response.data && Array.isArray(response.data.jobs)) {
         setJobRequests(response.data.jobs);
       } else {
@@ -49,17 +41,7 @@ function JobRequestManagement({ showNotification }) {
   const fetchVendors = useCallback(async () => {
     try {
       const baseUrl = await getBackendUrl();
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      console.log('Fetching vendors from:', `${baseUrl}/api/vendors`);
-      console.log('Using token:', token);
-      const response = await axios.get(`${baseUrl}/api/vendors`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axiosInstance.get(`${baseUrl}/api/vendors`);
       console.log('Vendors fetched:', response.data);
       setVendors(response.data);
     } catch (error) {
@@ -72,7 +54,8 @@ function JobRequestManagement({ showNotification }) {
           console.error('Invalid token. Attempting to refresh...');
           showNotification('Session expired. Please log in again.', 'error');
           logout();
-          // Redirect to login page or show login modal
+          // Optionally, redirect to login page
+          window.location.href = '/login';
         } else {
           showNotification(`Error fetching vendors: ${error.response.data.error || 'Unknown error'}`, 'error');
         }
@@ -99,11 +82,7 @@ function JobRequestManagement({ showNotification }) {
     setLoading(true);
     try {
       const baseUrl = await getBackendUrl();
-      const response = await axios.get(`${baseUrl}/api/jobs/${jobRequest._id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await axiosInstance.get(`${baseUrl}/api/jobs/${jobRequest._id}`);
       setSelectedJobRequest(response.data);
       setIsModalOpen(true);
       setScopeOfWork(null);
@@ -141,10 +120,9 @@ function JobRequestManagement({ showNotification }) {
         baseUrl: baseUrl
       });
 
-      const response = await axios.post(`${baseUrl}/api/proposals`, formData, {
+      const response = await axiosInstance.post(`${baseUrl}/api/proposals`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
 
@@ -175,11 +153,7 @@ function JobRequestManagement({ showNotification }) {
     try {
       setLoading(true);
       const baseUrl = await getBackendUrl();
-      await axios.put(`${baseUrl}/api/jobs/${jobId}/approve-proposal`, null, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      await axiosInstance.put(`${baseUrl}/api/jobs/${jobId}/approve-proposal`);
       showNotification('Proposal approved successfully', 'success');
       await fetchJobRequests();
       setIsModalOpen(false);
@@ -195,15 +169,10 @@ function JobRequestManagement({ showNotification }) {
     try {
       setLoading(true);
       const baseUrl = await getBackendUrl();
-      const token = localStorage.getItem('token');
-      console.log('Deleting job request with token:', token);
+      console.log('Deleting job request with baseUrl:', baseUrl);
 
-      const response = await axios.delete(`${baseUrl}/api/jobs/${jobId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log('Delete response:', response.data);
+      await axiosInstance.delete(`${baseUrl}/api/jobs/${jobId}`);
+      console.log('Delete response:', 'Success');
       showNotification('Job request deleted successfully', 'success');
       await fetchJobRequests();
       setIsModalOpen(false);
@@ -229,10 +198,9 @@ function JobRequestManagement({ showNotification }) {
       formData.append('vendorId', vendorId);
       formData.append('scopeOfWork', scopeOfWork, scopeOfWork.name);
 
-      const response = await axios.put(`${baseUrl}/api/proposals/${jobId}/submit-revision`, formData, {
+      const response = await axiosInstance.put(`${baseUrl}/api/proposals/${jobId}/submit-revision`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
 
