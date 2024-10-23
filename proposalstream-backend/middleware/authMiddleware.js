@@ -5,9 +5,6 @@ import passport from 'passport';
 import { BearerStrategy } from 'passport-azure-ad';
 import jwksRsa from 'jwks-rsa';
 
-// Use destructuring to get the verify function from jwt
-const { verify } = jwt;
-
 // Authenticate Token Middleware
 export const authenticateToken = (req, res, next) => {
   logger.info(`Authenticating token for request to ${req.originalUrl}`);
