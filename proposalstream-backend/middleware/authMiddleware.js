@@ -49,23 +49,25 @@ export const authorizeRoles = (...roles) => {
   };
 };
 
-// Passport Azure AD Bearer Strategy Configuration
-const options = {
-  identityMetadata: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/v2.0/.well-known/openid-configuration`,
-  clientID: process.env.AZURE_CLIENT_ID,
-  audience: 'api://YOUR_BACKEND_CLIENT_ID', // Replace with your backend API client ID
-  validateIssuer: true,
-  loggingLevel: 'info',
-  passReqToCallback: false,
-};
+// TODO worry about auth providers later
+// // Passport Azure AD Bearer Strategy Configuration
+// const options = {
+//   identityMetadata: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/v2.0/.well-known/openid-configuration`,
+//   clientID: process.env.AZURE_CLIENT_ID ?? 'SOMETING',
+//   validateIssuer: true,
+//   issuer: `https://sts.windows.net/${process.env.AZURE_TENANT_ID}/`,
+//   passReqToCallback: false,
+//   loggingLevel: 'info',
+//   scope: ['profile', 'offline_access', 'https://graph.microsoft.com/mail.read']
+// };
 
-passport.use(new BearerStrategy(options, (token, done) => {
-  // Optionally, add additional validation or user retrieval logic here
-  return done(null, token, token);
-}));
+// passport.use(new BearerStrategy(options, (token, done) => {
+//   // Optionally, add additional validation or user retrieval logic here
+//   return done(null, token, token);
+// }));
 
-// Export the authenticate middleware using Passport
-export const authenticate = passport.authenticate('oauth-bearer', { session: false });
+// // Export the authenticate middleware using Passport
+// export const authenticate = passport.authenticate('oauth-bearer', { session: false });
 
 // Authenticate Azure Token Middleware
 const client = jwksRsa({

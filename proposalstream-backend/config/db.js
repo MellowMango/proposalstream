@@ -76,8 +76,7 @@ const connectDB = async () => {
   try {
     await initializeAzureBlob(); // Ensure Azure Blob is initialized before connecting to DB
 
-    const conn = await mongoose.connect(MONGODB_URI, {
-    });
+    const conn = await mongoose.connect(MONGODB_URI, {});
 
     // Debug Logging to confirm the active database
     console.log(`Connected to database: ${mongoose.connection.name}`);

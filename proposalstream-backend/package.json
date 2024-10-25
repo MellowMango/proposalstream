@@ -36,7 +36,8 @@
     "passport": "^0.7.0",
     "passport-azure-ad": "^4.3.5",
     "pdf-lib": "^1.17.1",
-    "puppeteer": "^23.3.0"
+    "puppeteer": "^23.3.0",
+    "winston": "^3.15.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
