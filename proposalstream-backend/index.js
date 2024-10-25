@@ -63,10 +63,7 @@ app._router.stack.forEach(function(r){
 })
 
 // Define Routes
-app.use('/api/auth', (req, res, next) => {
-  console.log('Received request on /api/auth');
-  next();
-}, authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/vendors', vendorsRoutes);
 app.use('/api/contracts', contractsRoutes);

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Event name for unauthorized access
-const UNAUTHORIZED_EVENT = 'unauthorized';
+export const UNAUTHORIZED_EVENT = 'unauthorized';
 
 // Environment-based Backend URL Resolution
 export const getBackendUrl = () => {
@@ -90,28 +90,31 @@ api.interceptors.response.use(
 // Login function
 export const login = async (email, password) => {
   try {
-    const baseUrl = getBackendUrl();
     if (process.env.NODE_ENV !== 'production') {
-      console.log('Sending login request to:', `${baseUrl}/api/auth/login`);
+      console.log('Sending login request to:', '/api/auth/login');
     }
-    const response = await axios.post(`${baseUrl}/api/auth/login`, { email, password });
+    const response = await api.post('/api/auth/login', { email, password });
     if (process.env.NODE_ENV !== 'production') {
       console.log('Login response:', response.data);
     }
+    // Store token in local storage
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+
     return response.data; // Should include token and user data
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       console.error('Login error:', error.response?.data || error.message);
     }
-    throw error;
+    // throw error;
   }
 };
 
 // Register function
 export const register = async (email, password, role) => {
   try {
-    const baseUrl = getBackendUrl();
-    const response = await axios.post(`${baseUrl}/api/auth/register`, { email, password, role });
+    const response = await api.post('/api/auth/register', { email, password, role });
     if (response.data && response.data.token) {
       localStorage.setItem('token', response.data.token);
       return response.data;
@@ -155,6 +158,3 @@ export const clearAllNonAdminUsers = async () => {
 };
 
 export default api;
-
-// Export the unauthorized event name for use in AuthContext
-export { UNAUTHORIZED_EVENT };
