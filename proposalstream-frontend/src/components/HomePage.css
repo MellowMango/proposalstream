@@ -198,20 +198,6 @@ a:hover {
   gap: 1rem;
 }
 
-.scroll-down-icon {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-}
-
-.scroll-down-icon img {
-  width: 30px;
-  height: auto;
-  cursor: pointer;
-}
-
 /* Features Section */
 .features-section {
   padding: 4rem 5%;
@@ -319,6 +305,16 @@ a:hover {
   margin-bottom: 2rem;
 }
 
+.scroll-down-icon {
+  margin-top: 1rem;
+}
+
+.scroll-down-icon img {
+  width: 30px;
+  height: auto;
+  cursor: pointer;
+}
+
 /* Demo Form Section */
 .demo-form-section {
   padding: 4rem 5%;
@@ -343,8 +339,7 @@ a:hover {
   color: var(--text-color);
 }
 
-.demo-form input,
-.demo-form textarea {
+.demo-form input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--accent);
@@ -355,23 +350,15 @@ a:hover {
   background-color: var(--background-white);
 }
 
-.demo-form textarea {
-  resize: vertical;
-}
-
-.demo-form button[type="submit"] {
-  margin-top: 1rem;
-  width: 100%;
-}
-
-.demo-form input:focus,
-.demo-form textarea:focus {
+.demo-form input:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-.demo-form button {
+.demo-form button[type="submit"] {
+  margin-top: 1rem;
+  width: 100%;
   transition: var(--transition-default);
 }
 
@@ -453,7 +440,7 @@ a:hover {
   }
 
   .scroll-down-icon {
-    bottom: 10px;
+    margin-top: 1rem;
   }
 
   .demo-form button[type="submit"] {

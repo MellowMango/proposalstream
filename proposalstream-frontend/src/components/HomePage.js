@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoAndName from '../assets/images/logo-and-name.png';
 import heroBackground from '../assets/images/hero-background.jpg';
-import arrowDownIcon from '../assets/icons/arrow-down-icon.svg';
 import iconClearer from '../assets/icons/icon-clearer.svg';
 import iconFaster from '../assets/icons/icon-faster.svg';
 import iconFriendlier from '../assets/icons/icon-friendlier.svg';
@@ -41,30 +40,19 @@ const HomePage = () => {
     }
   };
 
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
   const staggerContainer = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.3
+        staggerChildren: 0.2
       }
     }
   };
 
   return (
     <div className="home-page">
-      {/* Navigation Bar */}
+      {/* Navigation Bar with Gradient Background */}
       <nav className="nav-bar">
         <Link to="/">
           <img 
@@ -102,16 +90,14 @@ const HomePage = () => {
           className="hero-section"
           initial="hidden"
           animate="visible"
-          variants={fadeIn}
+          variants={staggerContainer}
           style={{ backgroundImage: `url(${heroBackground})` }}
         >
           <motion.div 
             className="hero-content"
             variants={fadeInUp}
           >
-            <h1 className="hero-title">
-              Streamline Your <br />Proposal Process
-            </h1>
+            <h1 className="hero-title">Streamline Your <br />Proposal Process</h1>
             <p className="hero-subtitle">
               Connecting Property Managers and Vendors in a More Efficient Way.
             </p>
@@ -124,21 +110,10 @@ const HomePage = () => {
               </Link>
             </div>
           </motion.div>
-          {/* Scroll Down Icon */}
-          <motion.div 
-            className="scroll-down-icon"
-            animate={{ y: [0, 15, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <a href="#features">
-              <img src={arrowDownIcon} alt="Scroll Down" />
-            </a>
-          </motion.div>
         </motion.section>
         
         {/* Features Section */}
         <motion.section 
-          id="features"
           className="features-section"
           initial="hidden"
           whileInView="visible"
@@ -163,41 +138,62 @@ const HomePage = () => {
             >
               <h3 className="column-title">For Vendors</h3>
               <div className="attributes">
-                {/* Attribute Items */}
-                {[{
-                  icon: iconClearer,
-                  title: "Clearer",
-                  description: "Stand out to property managers with standardized, professional proposals tailored to their processes."
-                }, {
-                  icon: iconFaster,
-                  title: "Faster",
-                  description: "Automate everything but the scope, letting you focus on delivering high-quality proposals."
-                }, {
-                  icon: iconFriendlier,
-                  title: "Friendlier",
-                  description: "Enjoy real-time updates and improved collaboration for transparent communication with clients."
-                }, {
-                  icon: iconAccurate,
-                  title: "Accurate",
-                  description: "Reduce errors with automated data entry and validation features ensuring consistency."
-                }].map((item, index) => (
-                  <motion.div 
-                    className="attribute" 
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    variants={fadeInUp}
-                  >
-                    <img 
-                      className="attribute-icon" 
-                      alt={`${item.title} Icon`} 
-                      src={item.icon} 
-                    />
-                    <div className="attribute-content">
-                      <h4>{item.title}</h4>
-                      <p>{item.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                {/* Attribute 1 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Clearer Icon" 
+                    src={iconClearer} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Clearer</h4>
+                    <p>
+                      Stand out to property managers with standardized, professional proposals tailored to their processes.
+                    </p>
+                  </div>
+                </div>
+                {/* Attribute 2 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Faster Icon" 
+                    src={iconFaster} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Faster</h4>
+                    <p>
+                      Automate everything but the scope, letting you focus on delivering high-quality proposals.
+                    </p>
+                  </div>
+                </div>
+                {/* Attribute 3 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Friendlier Icon" 
+                    src={iconFriendlier} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Friendlier</h4>
+                    <p>
+                      Enjoy real-time updates and improved collaboration for transparent communication with clients.
+                    </p>
+                  </div>
+                </div>
+                {/* Attribute 4 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Accurate Icon" 
+                    src={iconAccurate} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Accurate</h4>
+                    <p>
+                      Reduce errors with automated data entry and validation features ensuring consistency.
+                    </p>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -208,41 +204,62 @@ const HomePage = () => {
             >
               <h3 className="column-title">For Property Managers</h3>
               <div className="attributes">
-                {/* Attribute Items */}
-                {[{
-                  icon: iconSimpler,
-                  title: "Simpler",
-                  description: "Focus on the proposal's scope without getting bogged down by legal jargon until necessary."
-                }, {
-                  icon: iconFaster,
-                  title: "Faster",
-                  description: "Quickly generate contracts and streamline the entire proposal process."
-                }, {
-                  icon: iconCollaborative,
-                  title: "Collaborative",
-                  description: "Enhance collaboration with vendors for transparent and efficient scope creation."
-                }, {
-                  icon: iconTrackable,
-                  title: "Trackable",
-                  description: "Comprehensive tracking of contracts and change orders to prevent errors."
-                }].map((item, index) => (
-                  <motion.div 
-                    className="attribute" 
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    variants={fadeInUp}
-                  >
-                    <img 
-                      className="attribute-icon" 
-                      alt={`${item.title} Icon`} 
-                      src={item.icon} 
-                    />
-                    <div className="attribute-content">
-                      <h4>{item.title}</h4>
-                      <p>{item.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                {/* Attribute 1 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Simpler Icon" 
+                    src={iconSimpler} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Simpler</h4>
+                    <p>
+                      Focus on the proposal's scope without getting bogged down by legal jargon until necessary.
+                    </p>
+                  </div>
+                </div>
+                {/* Attribute 2 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Faster Icon" 
+                    src={iconFaster} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Faster</h4>
+                    <p>
+                      Quickly generate contracts and streamline the entire proposal process.
+                    </p>
+                  </div>
+                </div>
+                {/* Attribute 3 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Collaborative Icon" 
+                    src={iconCollaborative} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Collaborative</h4>
+                    <p>
+                      Enhance collaboration with vendors for transparent and efficient scope creation.
+                    </p>
+                  </div>
+                </div>
+                {/* Attribute 4 */}
+                <div className="attribute">
+                  <img 
+                    className="attribute-icon" 
+                    alt="Trackable Icon" 
+                    src={iconTrackable} 
+                  />
+                  <div className="attribute-content">
+                    <h4>Trackable</h4>
+                    <p>
+                      Comprehensive tracking of contracts and change orders to prevent errors.
+                    </p>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -261,47 +278,9 @@ const HomePage = () => {
             <p className="cta-text">
               Sign up for a demo today and discover how ProposalStream can revolutionize your business.
             </p>
-            <Link to="#demo-form" className="btn btn-primary" aria-label="Apply for a Demo">
-              Apply for a Demo
+            <Link to="/register" className="btn btn-primary" aria-label="Sign Up for a Demo">
+              Sign Up for a Demo
             </Link>
-          </div>
-        </motion.section>
-
-        {/* Demo Application Form */}
-        <motion.section 
-          id="demo-form"
-          className="demo-form-section"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeIn}
-        >
-          <div className="demo-form-content">
-            <h2 className="section-title">Apply for a Demo</h2>
-            <p className="section-subtitle">
-              Fill out the form below, and we'll get back to you shortly.
-            </p>
-            <form className="demo-form" action="/apply-demo" method="post">
-              <div className="form-group">
-                <label htmlFor="name">Name *</label>
-                <input type="text" id="name" name="name" required aria-required="true" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">Email *</label>
-                <input type="email" id="email" name="email" required aria-required="true" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="company">Company</label>
-                <input type="text" id="company" name="company" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="message">Message *</label>
-                <textarea id="message" name="message" rows="5" required aria-required="true"></textarea>
-              </div>
-              <button type="submit" className="btn btn-primary" aria-label="Submit Application">
-                Submit
-              </button>
-            </form>
           </div>
         </motion.section>
       </main>

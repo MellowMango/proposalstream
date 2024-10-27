@@ -22,6 +22,9 @@ import AuthCallback from './AuthCallback';
 import HomePage from './components/HomePage';
 import './App.css';
 import { protectedRoutes } from './routeConfig';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from './theme';
 
 function App() {
   console.log("Rendering App component");
@@ -57,110 +60,113 @@ function App() {
 
   return (
     <MsalProvider instance={msalInstance}>
-      <Router>
-        <AuthProvider onError={handleError}>
-          <ErrorBoundary>
-            <div className="App">
-              {/* Conditionally render Header based on current route */}
-              {routesWithHeader.includes(window.location.pathname) && <Header />}
-              {notification && (
-                <Notification
-                  message={notification.message}
-                  type={notification.type}
-                />
-              )}
-              <main className="main-content">
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/login" element={<Login showNotification={showNotification} />} />
-                  <Route path="/register" element={<Register showNotification={showNotification} provider="proposalStream" />} />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <AuthProvider onError={handleError}>
+            <ErrorBoundary>
+              <div className="App">
+                {/* Conditionally render Header based on current route */}
+                {routesWithHeader.includes(window.location.pathname) && <Header />}
+                {notification && (
+                  <Notification
+                    message={notification.message}
+                    type={notification.type}
+                  />
+                )}
+                <main className="main-content">
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<Login showNotification={showNotification} />} />
+                    <Route path="/register" element={<Register showNotification={showNotification} provider="proposalStream" />} />
 
-                  {/* Protected Routes */}
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'vendor', 'admin']} provider="proposalStream">
-                        <Dashboard showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/job-request-form"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'admin', 'vendor']} provider="proposalStream">
-                        <JobRequestForm showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/add-property"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
-                        <AddProperty showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/job-request-management"
-                    element={
-                      <ProtectedRoute allowedRoles={['vendor', 'admin']} provider="proposalStream">
-                        <JobRequestManagement showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/contract-management"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
-                        <ContractManagement showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/user-management"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']} provider="proposalStream">
-                        <UserManagement showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/contract-template-upload"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
-                        <ContractTemplateUpload showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
+                    {/* Protected Routes */}
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute allowedRoles={['client', 'vendor', 'admin']} provider="proposalStream">
+                          <Dashboard showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/job-request-form"
+                      element={
+                        <ProtectedRoute allowedRoles={['client', 'admin', 'vendor']} provider="proposalStream">
+                          <JobRequestForm showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/add-property"
+                      element={
+                        <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
+                          <AddProperty showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/job-request-management"
+                      element={
+                        <ProtectedRoute allowedRoles={['vendor', 'admin']} provider="proposalStream">
+                          <JobRequestManagement showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/contract-management"
+                      element={
+                        <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
+                          <ContractManagement showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/user-management"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']} provider="proposalStream">
+                          <UserManagement showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/contract-template-upload"
+                      element={
+                        <ProtectedRoute allowedRoles={['client', 'admin']} provider="proposalStream">
+                          <ContractTemplateUpload showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  {/* MicrosoftProvider Public Routes */}
-                  <Route
-                    path="/microsoft-login"
-                    element={<Login showNotification={showNotification} provider="microsoftProvider" />}
-                  />
+                    {/* MicrosoftProvider Public Routes */}
+                    <Route
+                      path="/microsoft-login"
+                      element={<Login showNotification={showNotification} provider="microsoftProvider" />}
+                    />
 
-                  {/* MicrosoftProvider Protected Routes */}
-                  <Route
-                    path="/microsoft-dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'admin', 'vendor']} provider="microsoftProvider">
-                        <Dashboard showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
+                    {/* MicrosoftProvider Protected Routes */}
+                    <Route
+                      path="/microsoft-dashboard"
+                      element={
+                        <ProtectedRoute allowedRoles={['client', 'admin', 'vendor']} provider="microsoftProvider">
+                          <Dashboard showNotification={showNotification} />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  {/* Auth Callback Route */}
-                  <Route path="/auth/callback" element={<AuthCallback />} />
+                    {/* Auth Callback Route */}
+                    <Route path="/auth/callback" element={<AuthCallback />} />
 
-                  {/* Catch-All Route for 404 Not Found */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </main>
-            </div>
-          </ErrorBoundary>
-        </AuthProvider>
-      </Router>
+                    {/* Catch-All Route for 404 Not Found */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </main>
+              </div>
+            </ErrorBoundary>
+          </AuthProvider>
+        </Router>
+      </ThemeProvider>
     </MsalProvider>
   );
 }
