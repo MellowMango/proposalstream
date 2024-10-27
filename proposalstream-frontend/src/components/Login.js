@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useAuth } from '../CombinedAuthContext';
-import { useLocation, Navigate } from 'react-router-dom';
+import { useLocation, Navigate, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './Login.css'; // Import the CSS file
 import { login } from '../utils/api';
@@ -65,20 +65,23 @@ const Login = ({ showNotification }) => {
         <input value={loginForm.password} onChange={e => setLoginForm(_ => ({ ..._, password: e.target.value }))} type="password" id="password" name="password" />
       </div>
       <div className="form-group">
-      <button 
+        <button 
           className="login-button" 
           onClick={handleLogin}
         >
-          Sign in
+          Login
         </button>
       </div>
 
       <hr />
       
-      <p className="register-prompt">
-        Don't have an account? Contact your administrator.
-      </p>
-      {error && <p className="error">{error}</p>}
+      <div className="auth-links">
+        <p className="register-prompt">
+          Don't have an account? 
+          <Link to="/register" className="register-link">Sign up here</Link>
+        </p>
+        {error && <p className="error">{error}</p>}
+      </div>
     </div>
   );
 };

@@ -33,6 +33,9 @@ const HomePage = () => {
           <li className="menu-item">
             <Link to="/login" className="nav-login-button">Login</Link>
           </li>
+          <li className="menu-item">
+            <Link to="/register" className="nav-signup-button">Sign Up</Link>
+          </li>
         </ul>
       </nav>
       
@@ -68,7 +71,7 @@ const HomePage = () => {
                 Property Management and Vendors, More Connected Than Ever.
               </h2>
               <div className="cta-group">
-                <button className="cta-button">Sign Up</button>
+                <Link to="/register" className="cta-button">Sign Up</Link>
                 <Link to="/login" className="login-link">Login</Link>
               </div>
             </div>

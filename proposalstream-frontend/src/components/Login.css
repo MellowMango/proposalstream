@@ -1,11 +1,11 @@
 /* Login Form Container */
 .login-form {
     max-width: 400px;
-    margin: 50px auto;
-    padding: 30px 40px;
+    margin: 80px auto;  /* Increased margin for better vertical spacing */
+    padding: 40px 50px;  /* Increased horizontal padding */
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;  /* Slightly more rounded corners */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);  /* Enhanced shadow */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
@@ -17,105 +17,115 @@
 /* Form Heading */
 .login-form h2 {
     text-align: center;
-    margin-bottom: 25px;
-    color: #007bff;
-    font-size: 1.8rem;
+    margin-bottom: 40px;  /* More spacing below heading */
+    color: var(--variable-collection-boldblue);
+    font-size: 2.2rem;  /* Slightly larger */
+    font-weight: 700;  /* Bolder */
 }
 
 /* Form Group */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;  /* More spacing between elements */
     display: flex;
     flex-direction: column;
 }
 
 /* Labels */
 .form-group label {
-    margin-bottom: 8px;
-    color: #333333;
-    font-weight: 500;
-    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #2d3748;  /* Darker, more readable color */
+    font-weight: 600;
+    font-size: 1.1rem;
 }
 
 /* Input Fields */
 .form-group input {
-    padding: 10px 12px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
+    width: 100%;
+    padding: 14px 16px;  /* More padding for better touch targets */
+    border: 2px solid #e2e8f0;  /* Lighter border */
+    background-color: #f8fafc;  /* Slight background tint */
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border-color: var(--variable-collection-boldblue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* Login Button */
 .login-button {
     width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
+    margin-top: 10px;
+    padding: 16px;  /* Taller button */
+    background-color: #1d5aaf;
     color: #ffffff;
-    font-size: 1rem;
-    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    min-width: 250px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .login-button:hover {
-    background-color: #0056b3;
+    background-color: var(--variable-collection-secondaryblue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .login-button:active {
-    transform: scale(0.98);
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Style for disabled button state */
 .login-button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* Register Prompt */
 .register-prompt {
-    text-align: center;
-    margin-top: 20px;
-    color: #555555;
-    font-size: 0.95rem;
+    color: #4a5568;  /* More readable color */
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-bottom: 10px;
 }
 
 /* Register Link */
 .register-link {
-    color: #007bff;
+    color: var(--variable-collection-boldblue);
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
+    font-weight: 600;
+    margin-left: 8px;
+    transition: all 0.3s ease;
 }
 
 .register-link:hover {
-    color: #0056b3;
+    color: var(--variable-collection-secondaryblue);
     text-decoration: underline;
 }
 
 /* Responsive Design */
 @media (max-width: 480px) {
     .login-form {
-        padding: 20px;
+        margin: 40px auto;
+        padding: 30px;
     }
 
     .login-form h2 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
 
     .form-group label,
     .form-group input,
     .login-button {
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
 }
 
@@ -133,11 +143,19 @@
 }
 
 .error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 10px 15px;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    background-color: #fff5f5;
+    color: #c53030;
+    padding: 12px 16px;
+    font-weight: 500;
+    margin: 20px 0;
     text-align: center;
+}
+
+/* Update auth links section */
+.auth-links {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;  /* More visible separator */
 }
