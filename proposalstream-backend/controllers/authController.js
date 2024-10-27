@@ -39,10 +39,12 @@ export const register = async (req, res) => {
         }
       }
 
+      // FIXME a new vender is not created, only the user is created
       const vendor = new Vendor({
         user: user._id,
         ...vendorData,
       });
+
       await vendor.save();
     }
 

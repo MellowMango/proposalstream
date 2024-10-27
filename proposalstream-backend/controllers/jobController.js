@@ -55,6 +55,7 @@ export const getAllJobs = async (req, res) => {
 
     logger.info(`Pagination: page=${page}, limit=${limit}, skip=${skip}`);
 
+    // FIXME should only get jobs related to the user
     const jobs = await Job.find()
       .populate({
         path: 'proposal',
@@ -64,6 +65,7 @@ export const getAllJobs = async (req, res) => {
           select: 'vendorLLC'
         }
       })
+      // TODO .where('client').equals(req.user.id)
       .skip(skip)
       .limit(limit)
       .lean();
