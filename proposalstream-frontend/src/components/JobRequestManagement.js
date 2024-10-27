@@ -6,7 +6,7 @@ import VendorSelector from './VendorSelector';
 import './JobRequestManagement.css';
 
 function JobRequestManagement({ showNotification }) {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [jobRequests, setJobRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -112,7 +112,6 @@ function JobRequestManagement({ showNotification }) {
         jobId: selectedJobRequest._id,
         vendorId: vendorId,
         scopeOfWork: scopeOfWork.name,
-        baseUrl: baseUrl
       });
 
       const response = await api.post('/api/proposals', formData, {

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import api, { getBackendUrl } from '../utils/api';
+import api from '../utils/api';
 import './AddVendorModal.css';
 
 function AddVendorModal({ onClose, onVendorAdded }) {

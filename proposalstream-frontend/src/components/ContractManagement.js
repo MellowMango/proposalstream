@@ -20,14 +20,8 @@ function ContractManagement({ showNotification }) {
       console.log('Starting to fetch data');
       setLoading(true);
       setError(null);
-      const baseUrl = await getBackendUrl();
       
-      console.log('Fetching contracts from:', `${baseUrl}/api/contracts`);
-      const contractsResponse = await api.get('/api/contracts', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const contractsResponse = await api.get('/api/contracts');
       console.log('Contracts fetched:', JSON.stringify(contractsResponse.data, null, 2));
       
       console.log('Fetching proposals from:', `${baseUrl}/api/proposals`);
@@ -57,11 +51,7 @@ function ContractManagement({ showNotification }) {
 
   const fetchContractTemplates = useCallback(async () => {
     try {
-      const response = await api.get('/api/contract-templates', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await api.get('/api/contract-templates');
       console.log('Templates found:', response.data);
       setContractTemplates(response.data);
     } catch (error) {
@@ -164,7 +154,6 @@ function ContractManagement({ showNotification }) {
     if (!selectedItem) return;
     try {
       setLoading(true);
-      const baseUrl = await getBackendUrl();
       const response = await api.put(`/api/contracts/${selectedItem._id}`, {
         contractStatus: 'Approved'
       });
@@ -200,7 +189,6 @@ function ContractManagement({ showNotification }) {
   const handleReviseProposal = async (proposalId) => {
     try {
       setLoading(true);
-      const baseUrl = await getBackendUrl();
       
       // Find the proposal
       const proposal = proposals.find(p => p._id === proposalId);
@@ -218,7 +206,7 @@ function ContractManagement({ showNotification }) {
       
       console.log('Requesting revision for proposal:', proposalId);
       console.log('Associated job ID:', jobId);
-      console.log('Request URL:', `${baseUrl}/api/jobs/${jobId}/request-revision`);
+      console.log('Request URL:', `/api/jobs/${jobId}/request-revision`);
       
       const response = await api.put(`/api/jobs/${jobId}/request-revision`);
       console.log('Response:', response.data);
@@ -258,7 +246,6 @@ function ContractManagement({ showNotification }) {
     if (!selectedItem) return;
     try {
       setLoading(true);
-      const baseUrl = await getBackendUrl();
       await api.delete(`/api/contracts/${selectedItem._id}`);
       showNotification('Contract deleted successfully', 'success');
       setIsModalOpen(false);
