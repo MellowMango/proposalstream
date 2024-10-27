@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../CombinedAuthContext';
+import { useAuth } from '../CombinedAuthContext';
 import './Register.css'; // Import the CSS file for styling
 
 function Register({ showNotification }) {
@@ -15,7 +15,7 @@ function Register({ showNotification }) {
     contractSignerLastName: '',
     serviceType: '',
   });
-  const { register, registerAdmin } = useContext(AuthContext);
+  const { register, registerAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleVendorChange = (e) => {
