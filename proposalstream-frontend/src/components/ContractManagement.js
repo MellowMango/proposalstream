@@ -24,7 +24,7 @@ function ContractManagement({ showNotification }) {
       const contractsResponse = await api.get('/api/contracts');
       console.log('Contracts fetched:', JSON.stringify(contractsResponse.data, null, 2));
       
-      console.log('Fetching proposals from:', `${baseUrl}/api/proposals`);
+      console.log('Fetching proposals from:', '/api/proposals');
       const proposalsResponse = await api.get('/api/proposals', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
