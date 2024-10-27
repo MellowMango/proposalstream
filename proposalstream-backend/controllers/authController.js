@@ -2,11 +2,9 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Vendor from '../models/Vendor.js';
 import logger from '../utils/logger.js';
-import mongoose from 'mongoose';
 
 export const register = async (req, res) => {
   try {
-    console.log('Registering user:', req.body);
     const { email, password, role, vendorData } = req.body;
 
     let user = await User.findOne({ email });
@@ -20,8 +18,6 @@ export const register = async (req, res) => {
       password, // Use the plain password; pre-save hook will hash it
       role,
     });
-
-    console.log('User before saving:', user);
 
     await user.save();
 
@@ -155,7 +151,26 @@ export const registerAdmin = async (req, res) => {
     });
 
     await user.save();
-    res.status(201).json({ message: 'Admin registered successfully' });
+
+    // Generate JWT token
+    const payload = {
+      user: {
+        id: user._id,
+        role: user.role,
+      },
+    };
+
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, async (err, token) => {
+      if (err) {
+        logger.error('JWT Sign Error in Register:', err);
+        return res.status(500).json({ error: 'Token generation failed' });
+      }
+
+      // Fetch user data to send in response
+      const userData = await User.findById(user.id).select('-password');
+
+      res.json({ token, user: userData });
+    });
   } catch (error) {
     logger.error('Error registering admin:', error);
     res.status(500).json({ message: 'Error registering admin', error: error.message });

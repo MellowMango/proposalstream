@@ -60,11 +60,10 @@ export const AuthProvider = ({ children, onError }) => {
     }
   }, [navigate, handleError]);
 
-  // TODO Add registerAdmin function on api
-  const registerAdmin = useCallback(async (registrationData) => {
+  const registerAdmin = useCallback(async ({ email, password, adminSecretKey }) => {
     setIsLoading(true);
     try {
-      const { user: userData, token } = await api.registerAdmin(registrationData);
+      const { user: userData, token } = await api.registerAdmin(email, password, adminSecretKey );
       handleAuthenticated(userData, token);
       navigate('/dashboard');
     } catch (error) {
