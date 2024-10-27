@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getBackendUrl } from '../utils/api';
-import { useAuth } from '../CombinedAuthContext';
+import api from '../utils/api';
 import { Link } from 'react-router-dom';
 import VendorSelector from './VendorSelector';
 import AddVendorModal from './AddVendorModal';
 import './JobRequestForm.css';
 
 function JobRequestForm({ showNotification }) {
-  const { user } = useAuth();
   const [formData, setFormData] = useState({
     propertyId: '',
     requestDetails: '',
@@ -22,16 +19,7 @@ function JobRequestForm({ showNotification }) {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const baseUrl = await getBackendUrl();
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No authentication token found');
-        }
-        const response = await axios.get(`${baseUrl}/api/properties`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await api.get('/api/properties');
         if (response.data && Array.isArray(response.data.properties)) {
           setProperties(response.data.properties);
         } else {
@@ -69,12 +57,6 @@ function JobRequestForm({ showNotification }) {
 
     setLoading(true);
     try {
-      const baseUrl = await getBackendUrl();
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
       const payload = {
         propertyId: formData.propertyId,
         requestDetails: formData.requestDetails,
@@ -84,11 +66,7 @@ function JobRequestForm({ showNotification }) {
         // client: user._id,
       };
 
-      await axios.post(`${baseUrl}/api/jobs`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post('/api/jobs', payload);
 
       showNotification('Job request submitted successfully', 'success');
       setFormData({

@@ -2,26 +2,37 @@ import Job from '../models/Job.js';
 import Proposal from '../models/Proposal.js';
 import Contract from '../models/Contract.js';
 import logger from '../utils/logger.js';
+import Property from '../models/Property.js';
+import Vendor from '../models/Vendor.js';
 
 export const createJob = async (req, res) => {
   try {
     const {
-      building,
+      propertyId,
       requestDetails,
-      contractSignerEmail,
-      contractSignerFirstName,
-      contractSignerLastName,
+      vendorId,
       serviceType,
     } = req.body;
+
+    const user = req.user;
+    const property = await Property.findById(propertyId);
+    const vendor = await Vendor.findById(vendorId);
+
+    console.log('Property:', property);
+    console.log('Vendor:', vendor);
+    console.log('user:', user);
     
     const newJob = new Job({
-      building,
+      propertyId: property._id,
+      client: user.id,
       requestDetails,
-      contractSignerEmail,
-      contractSignerFirstName,
-      contractSignerLastName,
-      serviceType: serviceType || 'Not specified',
-      status: 'Pending'
+      // contract stuff :)
+      vendorCompany: vendor._id,
+      vendorEmail: vendor.contractSignerEmail,
+      contractSignerEmail: vendor.contractSignerEmail,
+      contractSignerFirstName: vendor.contractSignerFirstName,
+      contractSignerLastName: vendor.contractSignerLastName,
+      serviceType: serviceType ?? 'Not specified',
     });
 
     const job = await newJob.save();

@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { getBackendUrl } from '../utils/api';
-import { useAuth } from '../CombinedAuthContext';
+import api from '../utils/api';
 import './AddProperty.css'; // Ensure this CSS file exists and is styled appropriately
 
 function AddProperty({ showNotification }) {
-  const { user } = useAuth;
   const [formData, setFormData] = useState({
     propertyName: '',
     propertyLLC: '',
@@ -45,19 +42,8 @@ function AddProperty({ showNotification }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user) {
-      showNotification('You must be logged in to add properties.', 'error');
-      return;
-    }
-
     setLoading(true);
     try {
-      const baseUrl = await getBackendUrl();
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
       // Prepare form data with file
       const propertyData = new FormData();
       propertyData.append('propertyName', formData.propertyName);
@@ -74,11 +60,8 @@ function AddProperty({ showNotification }) {
         propertyData.append('cOIFile', cOIFile);
       }
 
-      const response = await axios.post(`${baseUrl}/api/properties`, propertyData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await api.post('/api/properties', propertyData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (response.status === 201) {

@@ -64,7 +64,6 @@ const JobSchema = new mongoose.Schema({
   proposal: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Proposal',
-    required: false
   },
 });
 

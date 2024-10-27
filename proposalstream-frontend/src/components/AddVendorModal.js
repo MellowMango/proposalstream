@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { getBackendUrl } from '../utils/api';
+import api, { getBackendUrl } from '../utils/api';
 import './AddVendorModal.css';
 
 function AddVendorModal({ onClose, onVendorAdded }) {
@@ -20,13 +20,7 @@ function AddVendorModal({ onClose, onVendorAdded }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const baseUrl = await getBackendUrl();
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${baseUrl}/api/vendors`, vendorData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post('/api/vendors', vendorData);
       onVendorAdded(response.data); // Pass the new vendor back to the parent
     } catch (error) {
       console.error('Error adding vendor:', error);
