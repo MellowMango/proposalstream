@@ -24,9 +24,12 @@ function ContractTemplateUpload({ showNotification }) {
   const [editingTemplate, setEditingTemplate] = useState(null);
 
   useEffect(() => {
-    fetchTemplates();
-    fetchAvailableFields();
-  }, []);
+    const init = async () => {
+      await fetchTemplates();
+      await fetchAvailableFields();
+    };
+    init();
+  }, [fetchTemplates, fetchAvailableFields]);
 
   const fetchTemplates = async () => {
     try {
@@ -111,7 +114,7 @@ function ContractTemplateUpload({ showNotification }) {
     };
 
     try {
-      const response = await api.post('/api/contract-templates', templateData);
+      await api.post('/api/contract-templates', templateData);
       showNotification('Contract template uploaded successfully', 'success');
       setFile(null);
       setHtmlContent(null);

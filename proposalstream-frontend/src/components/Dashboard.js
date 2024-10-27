@@ -10,7 +10,7 @@ function Dashboard({ showNotification }) {
   // Function to filter links based on user roles and exclude the Home link
   const getFilteredLinks = () => {
     return navLinks.filter(
-      (link) => link.roles.some((role) => user.role == role) && link.path !== '/'
+      (link) => link.roles.some((role) => user.role === role) && link.path !== '/'
     );
   };
 

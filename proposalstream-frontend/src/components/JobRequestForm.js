@@ -84,7 +84,7 @@ function JobRequestForm({ showNotification }) {
         // client: user._id,
       };
 
-      const response = await axios.post(`${baseUrl}/api/jobs`, payload, {
+      await axios.post(`${baseUrl}/api/jobs`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

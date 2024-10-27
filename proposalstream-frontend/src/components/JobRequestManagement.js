@@ -14,7 +14,6 @@ function JobRequestManagement({ showNotification }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scopeOfWork, setScopeOfWork] = useState(null);
   const [vendorId, setVendorId] = useState('');
-  const [vendors, setVendors] = useState([]);
 
   const fetchJobRequests = useCallback(async () => {
     try {
@@ -80,8 +79,7 @@ function JobRequestManagement({ showNotification }) {
   const handleJobRequestClick = async (jobRequest) => {
     setLoading(true);
     try {
-      const baseUrl = await getBackendUrl();
-      const response = await api.get('/api/jobs/${jobRequest._id}');
+      const response = await api.get(`/api/jobs/${jobRequest._id}`);
       setSelectedJobRequest(response.data);
       setIsModalOpen(true);
       setScopeOfWork(null);
@@ -152,7 +150,7 @@ function JobRequestManagement({ showNotification }) {
     try {
       setLoading(true);
       const baseUrl = await getBackendUrl();
-      await api.put('/api/jobs/${jobId}/approve-proposal');
+      await api.put(`/api/jobs/${jobId}/approve-proposal`);
       showNotification('Proposal approved successfully', 'success');
       await fetchJobRequests();
       setIsModalOpen(false);
@@ -167,10 +165,7 @@ function JobRequestManagement({ showNotification }) {
   const handleDeleteJobRequest = async (jobId) => {
     try {
       setLoading(true);
-      const baseUrl = await getBackendUrl();
-      console.log('Deleting job request with baseUrl:', baseUrl);
-
-      await api.delete('/api/jobs/${jobId}');
+      await api.delete(`/api/jobs/${jobId}`);
       console.log('Delete response:', 'Success');
       showNotification('Job request deleted successfully', 'success');
       await fetchJobRequests();
@@ -197,7 +192,7 @@ function JobRequestManagement({ showNotification }) {
       formData.append('vendorId', vendorId);
       formData.append('scopeOfWork', scopeOfWork, scopeOfWork.name);
 
-      const response = await api.put('/api/proposals/${jobId}/submit-revision', formData, {
+      const response = await api.put(`/api/proposals/${jobId}/submit-revision`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }

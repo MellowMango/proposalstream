@@ -51,7 +51,7 @@ function EditTemplateModal({ template, onClose, onUpdated, showNotification }) {
     const updatedContractType = contractType === 'other' ? customContractName.trim() : contractType;
 
     try {
-      const response = await api.put(`/api/contract-templates/${template._id}`, {
+      await api.put(`/api/contract-templates/${template._id}`, {
         fields,
         contractType: updatedContractType
       });

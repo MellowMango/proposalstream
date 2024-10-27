@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import api, { getBackendUrl, clearAllNonAdminUsers } from '../utils/api';
+import api, { clearAllNonAdminUsers } from '../utils/api';
 
 function UserManagement({ showNotification }) {
   const [users, setUsers] = useState([]);

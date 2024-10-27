@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Modal from './Modal';
 import api, { getBackendUrl } from '../utils/api';
 import './ContractManagement.css';
@@ -14,8 +14,6 @@ function ContractManagement({ showNotification }) {
   const [modalType, setModalType] = useState('');
   const [pdfUrl, setPdfUrl] = useState(null);
   const [contractTemplates, setContractTemplates] = useState([]);
-
-  const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
     try {
@@ -283,21 +281,6 @@ function ContractManagement({ showNotification }) {
     } catch (error) {
       console.error('Error deleting proposal:', error);
       showNotification('Error deleting proposal', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleProposalStatusChange = async (proposalId, newStatus) => {
-    try {
-      setLoading(true);
-      const baseUrl = await getBackendUrl();
-      await api.put(`/api/proposals/${proposalId}/status`, { newStatus });
-      showNotification(`Proposal status updated to ${newStatus}`, 'success');
-      await fetchData();
-    } catch (error) {
-      console.error('Error updating proposal status:', error);
-      showNotification('Error updating proposal status', 'error');
     } finally {
       setLoading(false);
     }
