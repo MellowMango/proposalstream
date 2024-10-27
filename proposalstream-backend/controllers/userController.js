@@ -18,7 +18,7 @@ export const getUserById = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        roles: user.roles,
+        role: user.role,
         hasOnboarded: user.hasOnboarded,
       });
     } else {

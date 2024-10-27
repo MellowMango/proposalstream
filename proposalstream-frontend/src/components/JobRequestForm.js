@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../CombinedAuthContext';
+import { useAuth } from '../CombinedAuthContext';
 import { Link } from 'react-router-dom';
 import VendorSelector from './VendorSelector';
 import AddVendorModal from './AddVendorModal';
 import './JobRequestForm.css';
 
 function JobRequestForm({ showNotification }) {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     propertyId: '',
     requestDetails: '',

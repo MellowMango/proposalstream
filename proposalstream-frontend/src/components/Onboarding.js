@@ -1,12 +1,12 @@
 // src/components/Onboarding.js
 
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../CombinedAuthContext';
+import { useAuth } from '../CombinedAuthContext';
 import './Onboarding.css'; // Import CSS for styling
 
 function Onboarding({ showNotification }) {
-  const { user, register } = useContext(AuthContext);
+  const { user, register } = useAuth();
   const navigate = useNavigate();
 
   const [additionalInfo, setAdditionalInfo] = useState({
@@ -43,7 +43,7 @@ function Onboarding({ showNotification }) {
       <h2>Complete Your Profile</h2>
       <form onSubmit={handleSubmit}>
         {/* Render fields based on user's role */}
-        {user.roles.includes('vendor') && (
+        {user.role === 'vendor' && (
           <>
             <div className="form-group">
               <label htmlFor="vendorLLC">Vendor LLC:</label>
@@ -93,7 +93,7 @@ function Onboarding({ showNotification }) {
           </>
         )}
 
-        {user.roles.includes('admin') && (
+        {user.role === 'admin' && (
           <>
             <div className="form-group">
               <label htmlFor="adminSecretKey">Admin Secret Key:</label>

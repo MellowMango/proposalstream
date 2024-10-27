@@ -78,6 +78,10 @@ const connectDB = async () => {
 
     const conn = await mongoose.connect(MONGODB_URI, {});
 
+    if (process.env.NODE_ENV !== 'production') {
+      mongoose.set("debug", true);
+    }
+
     // Debug Logging to confirm the active database
     console.log(`Connected to database: ${mongoose.connection.name}`);
     logger.info(`MongoDB Connected: ${conn.connection.host}`);

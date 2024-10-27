@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 // Create an Axios instance
-/** @deprecated */
+/** @deprecated use api.js instead */
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:6001/api',
   withCredentials: true, // Ensure cookies are sent with requests

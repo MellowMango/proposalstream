@@ -1,24 +1,19 @@
 // proposalstream-frontend/src/components/Login.js
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '../CombinedAuthContext';
-import { useLocation, Navigate, Link } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './Login.css'; // Import the CSS file
-import { login } from '../utils/api';
+import * as api from '../utils/api';
 
 const Login = ({ showNotification }) => {
-  const { user, isLoading, error, initiateAzureLogin } = useAuth();
-  const location = useLocation();
+  const { user, isLoading, error } = useAuth();
 
   const [loginForm, setLoginForm] = React.useState({
     email: '',
     password: '',
   });
-
-  useEffect(() => {
-    console.log('Login component state:', { user, isLoading, error });
-  }, [user, isLoading, error]);
 
   const handleLogin = async () => {
     console.log('Logging in with:', loginForm);
@@ -28,7 +23,7 @@ const Login = ({ showNotification }) => {
       return;
     }
 
-    const data = await login(loginForm.email, loginForm.password)
+    const data = await api.login(loginForm.email, loginForm.password)
 
     if (!data) {
       showNotification('Invalid email or password', 'error');
@@ -36,11 +31,8 @@ const Login = ({ showNotification }) => {
     }
   };
 
-  // If user is already logged in, redirect to intended page or home
   if (user) {
-    const from = location.state?.from?.pathname || '/';
-    console.log('User is logged in, redirecting to:', from);
-    return <Navigate to={from} replace />;
+    return <Navigate to={"/dashboard"} />;
   }
 
   if (isLoading) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../CombinedAuthContext';
 import './Register.css'; // Import the CSS file for styling
@@ -15,12 +15,18 @@ function Register({ showNotification }) {
     contractSignerLastName: '',
     serviceType: '',
   });
-  const { register, registerAdmin } = useAuth();
+  const { user, register, registerAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleVendorChange = (e) => {
     setVendorData({ ...vendorData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -2,13 +2,16 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Vendor from '../models/Vendor.js';
 import logger from '../utils/logger.js';
+import mongoose from 'mongoose';
 
 export const register = async (req, res) => {
   try {
+    console.log('Registering user:', req.body);
     const { email, password, role, vendorData } = req.body;
 
     let user = await User.findOne({ email });
     if (user) {
+      logger.warn('User with email already exists:', email);
       return res.status(400).json({ error: 'User already exists' });
     }
 
@@ -17,6 +20,10 @@ export const register = async (req, res) => {
       password, // Use the plain password; pre-save hook will hash it
       role,
     });
+
+    console.log('User before saving:', user);
+
+    await user.save();
 
     // If the role is vendor, create a Vendor entry
     if (role === 'vendor' && vendorData) {
@@ -31,6 +38,7 @@ export const register = async (req, res) => {
 
       for (const field of requiredVendorFields) {
         if (!vendorData[field]) {
+          logger.warn(`Missing vendor field: ${field}`);
           return res.status(400).json({ error: `Missing vendor field: ${field}` });
         }
       }
@@ -42,11 +50,9 @@ export const register = async (req, res) => {
       await vendor.save();
     }
 
-    await user.save();
-
     const payload = {
       user: {
-        id: user.id,
+        id: user._id,
         role: user.role,
       },
     };
@@ -115,7 +121,6 @@ export const login = async (req, res) => {
 };
 
 // Add this method to the existing authController.js file
-
 export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');

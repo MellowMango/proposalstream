@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../utils/axiosInstance'; // Updated import
 import Modal from './Modal';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../CombinedAuthContext';
+import { useAuth } from '../CombinedAuthContext';
 import VendorSelector from './VendorSelector';
 import './JobRequestManagement.css';
 
 function JobRequestManagement({ showNotification }) {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
   const [jobRequests, setJobRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
