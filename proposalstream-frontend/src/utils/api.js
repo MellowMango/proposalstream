@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Event name for unauthorized access
-const UNAUTHORIZED_EVENT = 'unauthorized';
+export const UNAUTHORIZED_EVENT = 'unauthorized';
 
 // Environment-based Backend URL Resolution
 export const getBackendUrl = () => {
@@ -90,28 +90,31 @@ api.interceptors.response.use(
 // Login function
 export const login = async (email, password) => {
   try {
-    const baseUrl = getBackendUrl();
     if (process.env.NODE_ENV !== 'production') {
-      console.log('Sending login request to:', `${baseUrl}/api/auth/login`);
+      console.log('Sending login request to:', '/api/auth/login');
     }
-    const response = await axios.post(`${baseUrl}/api/auth/login`, { email, password });
+    const response = await api.post('/api/auth/login', { email, password });
     if (process.env.NODE_ENV !== 'production') {
       console.log('Login response:', response.data);
     }
+    // Store token in local storage
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+
     return response.data; // Should include token and user data
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       console.error('Login error:', error.response?.data || error.message);
     }
-    throw error;
+    // throw error;
   }
 };
 
 // Register function
 export const register = async (email, password, role) => {
   try {
-    const baseUrl = getBackendUrl();
-    const response = await axios.post(`${baseUrl}/api/auth/register`, { email, password, role });
+    const response = await api.post('/api/auth/register', { email, password, role });
     if (response.data && response.data.token) {
       localStorage.setItem('token', response.data.token);
       return response.data;
@@ -138,6 +141,35 @@ export const register = async (email, password, role) => {
   }
 };
 
+export const registerAdmin = async (email, password, adminSecretKey) => {
+  try {
+    const response = await api.post('/api/auth/register-admin', { email, password, adminSecretKey });
+    if (response.data && response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      return response.data;
+    } else {
+      throw new Error('Invalid response from server');
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (error.response) {
+        console.error('Admin registration error response:', error.response.data);
+      } else if (error.request) {
+        console.error('Admin registration error request:', error.request);
+      } else {
+        console.error('Admin registration error:', error.message);
+      }
+    }
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    } else if (error.request) {
+      throw new Error('No response from server');
+    } else {
+      throw new Error(error.message);
+    }
+  }
+}
+
 // Function to clear all non-admin users
 export const clearAllNonAdminUsers = async () => {
   try {
@@ -154,7 +186,20 @@ export const clearAllNonAdminUsers = async () => {
   }
 };
 
-export default api;
+// Function to fetch current user
+export const me = async () => {
+  try {
+    const response = await api.get('/api/auth/me');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Me response:', response.data);
+    }
+    return response.data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Me error:', error.response?.data || error.message);
+    }
+    throw error;
+  }
+}
 
-// Export the unauthorized event name for use in AuthContext
-export { UNAUTHORIZED_EVENT };
+export default api;

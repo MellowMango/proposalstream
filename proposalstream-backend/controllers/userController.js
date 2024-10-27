@@ -18,8 +18,7 @@ export const getUserById = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        roles: user.roles,
-        hasOnboarded: user.hasOnboarded,
+        role: user.role,
       });
     } else {
       res.status(404).json({ message: 'User not found' });

@@ -2,7 +2,6 @@ import express from 'express';
 import { 
   authenticateToken, 
   authorizeRoles, 
-  authenticateAzureToken,
   default as authMiddleware // Add this line
 } from '../middleware/authMiddleware.js';
 import * as userController from '../controllers/userController.js';
@@ -12,7 +11,7 @@ import logger from '../utils/logger.js';
 const router = express.Router();
 
 // Get all users (admin only)
-router.get('/', authenticateAzureToken, authorizeRoles('admin'), async (req, res) => {
+router.get('/', authenticateToken, authorizeRoles('admin'), async (req, res) => {
   try {
     logger.info('Fetching all users');
     const users = await User.find().select('-password');
@@ -24,7 +23,7 @@ router.get('/', authenticateAzureToken, authorizeRoles('admin'), async (req, res
 });
 
 // Clear all non-admin users (admin only)
-router.delete('/clear-all', authenticateAzureToken, authorizeRoles('admin'), async (req, res) => {
+router.delete('/clear-all', authenticateToken, authorizeRoles('admin'), async (req, res) => {
   try {
     logger.info('Attempting to clear all non-admin users');
     logger.info('User making the request:', req.user);
@@ -44,7 +43,7 @@ router.delete('/clear-all', authenticateAzureToken, authorizeRoles('admin'), asy
 });
 
 // Delete a specific user (admin only)
-router.delete('/:userId', authenticateAzureToken, authorizeRoles('admin'), async (req, res) => {
+router.delete('/:userId', authenticateToken, authorizeRoles('admin'), async (req, res) => {
   try {
     const result = await User.findByIdAndDelete(req.params.userId);
     if (!result) {
@@ -91,20 +90,6 @@ router.get('/:oid', authenticateToken, async (req, res) => {
     res.json(user);
   } catch (error) {
     logger.error('Error fetching user by OID:', error);
-    res.status(500).json({ message: 'Error fetching user', error: error.message });
-  }
-});
-
-// New route to handle user-related requests
-router.get('/:userId', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findOne({ oid: req.params.userId });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json({ hasOnboarded: user.hasOnboarded });
-  } catch (error) {
-    logger.error('Error fetching user:', error);
     res.status(500).json({ message: 'Error fetching user', error: error.message });
   }
 });

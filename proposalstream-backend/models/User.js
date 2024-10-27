@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'; // Changed from 'bcryptjs' to 'bcrypt'
 
 const UserSchema = new mongoose.Schema({
-  oid: { type: String, required: true, unique: true },
   email: {
     type: String,
     required: true,
@@ -17,7 +16,6 @@ const UserSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true
   },
   role: {
     type: String,
@@ -29,11 +27,6 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor',
   },
-  // Track onboarding status
-  hasOnboarded: {
-    type: Boolean,
-    default: false
-  }
 });
 
 // Pre-save middleware to hash password

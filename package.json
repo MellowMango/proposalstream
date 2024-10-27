@@ -3,27 +3,11 @@
     "version": "1.0.0",
     "description": "ProposalStream Project - Full Stack Application",
     "scripts": {
-        "start": "cd backend && node index.js",
-        "dev": "cd backend && nodemon index.js",
-"test": "cd proposalstream-backend && npm test"    },
+        "start": "concurrently \"cd proposalstream-frontend && npm start\" \"cd proposalstream-backend && npm start\"",
+        "dev": "concurrently \"cd proposalstream-frontend && npm start\" \"cd proposalstream-backend && npm run dev\"",
+        "test": "concurrently \"cd proposalstream-frontend && npm test\" \"cd proposalstream-backend && npm test\""
+    },
     "devDependencies": {
         "concurrently": "^6.2.0"
-    },
-    "dependencies": {
-        "@azure/msal-react": "^2.1.0",
-        "@azure/storage-blob": "^12.25.0",
-        "bcrypt": "^5.1.1",
-        "cors": "^2.8.5",
-        "docx": "^8.5.0",
-        "express-validator": "^7.2.0",
-        "jsonwebtoken": "^9.0.2",
-        "jwt-decode": "^4.0.0",
-        "mammoth": "^1.8.0",
-        "multer": "^1.4.5-lts.1",
-        "passport": "^0.7.0",
-        "passport-azure-ad": "^4.3.5",
-        "pdf-lib": "^1.17.1",
-        "puppeteer": "^23.4.1",
-        "winston": "^3.14.2"
     }
 }

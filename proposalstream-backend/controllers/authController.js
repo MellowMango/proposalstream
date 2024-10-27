@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import Vendor from '../models/Vendor.js';
 import logger from '../utils/logger.js';
@@ -10,6 +9,7 @@ export const register = async (req, res) => {
 
     let user = await User.findOne({ email });
     if (user) {
+      logger.warn('User with email already exists:', email);
       return res.status(400).json({ error: 'User already exists' });
     }
 
@@ -18,6 +18,8 @@ export const register = async (req, res) => {
       password, // Use the plain password; pre-save hook will hash it
       role,
     });
+
+    await user.save();
 
     // If the role is vendor, create a Vendor entry
     if (role === 'vendor' && vendorData) {
@@ -32,6 +34,7 @@ export const register = async (req, res) => {
 
       for (const field of requiredVendorFields) {
         if (!vendorData[field]) {
+          logger.warn(`Missing vendor field: ${field}`);
           return res.status(400).json({ error: `Missing vendor field: ${field}` });
         }
       }
@@ -43,11 +46,9 @@ export const register = async (req, res) => {
       await vendor.save();
     }
 
-    await user.save();
-
     const payload = {
       user: {
-        id: user.id,
+        id: user._id,
         role: user.role,
       },
     };
@@ -116,7 +117,6 @@ export const login = async (req, res) => {
 };
 
 // Add this method to the existing authController.js file
-
 export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -151,32 +151,28 @@ export const registerAdmin = async (req, res) => {
     });
 
     await user.save();
-    res.status(201).json({ message: 'Admin registered successfully' });
+
+    // Generate JWT token
+    const payload = {
+      user: {
+        id: user._id,
+        role: user.role,
+      },
+    };
+
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, async (err, token) => {
+      if (err) {
+        logger.error('JWT Sign Error in Register:', err);
+        return res.status(500).json({ error: 'Token generation failed' });
+      }
+
+      // Fetch user data to send in response
+      const userData = await User.findById(user.id).select('-password');
+
+      res.json({ token, user: userData });
+    });
   } catch (error) {
     logger.error('Error registering admin:', error);
     res.status(500).json({ message: 'Error registering admin', error: error.message });
-  }
-};
-
-// Update onboarding status
-export const updateOnboarding = async (req, res) => {
-  try {
-    const userId = req.user.id; // Assuming user ID is available in req.user
-    const { hasOnboarded } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { hasOnboarded },
-      { new: true }
-    ).select('-password'); // Exclude password from the returned user
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-
-    res.json({ message: 'Onboarding status updated.', user });
-  } catch (error) {
-    console.error('Error updating onboarding status:', error);
-    res.status(500).json({ message: 'Server error.' });
   }
 };

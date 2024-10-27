@@ -5,7 +5,7 @@ const navLinks = [
   { path: '/', name: 'Home', roles: ['client', 'vendor', 'admin'] },
 
   // Client-specific Links
-  { path: '/job-request', name: 'Submit a Job Request', roles: ['client', 'admin'] },
+  { path: '/job-request-form', name: 'Submit a Job Request', roles: ['client', 'admin'] },
   { path: '/contract-management', name: 'Manage Contracts', roles: ['client', 'admin'] },
   { path: '/contract-template-upload', name: 'Upload Contract Template', roles: ['client', 'admin'] },
 
