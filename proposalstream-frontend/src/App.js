@@ -25,6 +25,7 @@ import { protectedRoutes } from './routeConfig';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
+import PricingPage from './components/PricingPage';
 
 function App() {
   console.log("Rendering App component");
@@ -160,6 +161,9 @@ function App() {
 
                     {/* Catch-All Route for 404 Not Found */}
                     <Route path="*" element={<Navigate to="/" replace />} />
+
+                    {/* Pricing Page */}
+                    <Route path="/pricing" element={<PricingPage />} />
                   </Routes>
                 </main>
               </div>
