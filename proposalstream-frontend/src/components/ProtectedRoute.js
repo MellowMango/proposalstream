@@ -11,7 +11,6 @@ const ProtectedRoute = ({ children, allowedRoles, provider }) => {
 
   const isAuthenticated = user !== null;
   // const hasRequiredProvider = !provider || authProvider === provider;
-  const shouldRedirectToOnboard = !user?.hasOnboarded
   const hasRequiredRole =
     allowedRoles.length === 0
       ? true
@@ -38,11 +37,6 @@ const ProtectedRoute = ({ children, allowedRoles, provider }) => {
   //       return <Navigate to="/login" replace />;
   //   }
   // }
-
-  if (shouldRedirectToOnboard) {
-    console.log('ProtectedRoute - User needs onboarding. Redirecting to /onboarding.');
-    return <Navigate to="/onboarding" replace />;
-  }
 
   if (!hasRequiredRole) {
     console.log(`ProtectedRoute - User lacks required roles: ${allowedRoles.join(', ')}. Redirecting to /unauthorized.`);

@@ -2,7 +2,6 @@
 
   export const protectedRoutes = [
     '/dashboard',
-    '/onboarding',
     '/job-request-form',
     '/add-property',
     '/job-request-management',

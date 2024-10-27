@@ -18,7 +18,6 @@ import ContractTemplateUpload from './components/ContractTemplateUpload';
 import AddProperty from './components/AddProperty';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
-import Onboarding from './components/Onboarding';
 import AuthCallback from './AuthCallback';
 import HomePage from './components/HomePage';
 import './App.css';
@@ -83,14 +82,6 @@ function App() {
                     element={
                       <ProtectedRoute allowedRoles={['client', 'vendor', 'admin']} provider="proposalStream">
                         <Dashboard showNotification={showNotification} />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/onboarding"
-                    element={
-                      <ProtectedRoute allowedRoles={['client', 'vendor', 'admin']} provider="proposalStream">
-                        <Onboarding showNotification={showNotification} />
                       </ProtectedRoute>
                     }
                   />

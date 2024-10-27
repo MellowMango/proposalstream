@@ -78,9 +78,6 @@ const HomePage = () => {
             <Link to="/features">Features</Link>
           </li>
           <li className="menu-item">
-            <Link to="/onboarding">Onboarding</Link>
-          </li>
-          <li className="menu-item">
             <Link to="/pricing">Pricing</Link>
           </li>
           <li className="menu-item">

@@ -94,18 +94,4 @@ router.get('/:oid', authenticateToken, async (req, res) => {
   }
 });
 
-// New route to handle user-related requests
-router.get('/:userId', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findOne({ oid: req.params.userId });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json({ hasOnboarded: user.hasOnboarded });
-  } catch (error) {
-    logger.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Error fetching user', error: error.message });
-  }
-});
-
 export default router;
