@@ -141,6 +141,35 @@ export const register = async (email, password, role) => {
   }
 };
 
+export const registerAdmin = async (email, password, adminSecretKey) => {
+  try {
+    const response = await api.post('/api/auth/register-admin', { email, password, adminSecretKey });
+    if (response.data && response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      return response.data;
+    } else {
+      throw new Error('Invalid response from server');
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (error.response) {
+        console.error('Admin registration error response:', error.response.data);
+      } else if (error.request) {
+        console.error('Admin registration error request:', error.request);
+      } else {
+        console.error('Admin registration error:', error.message);
+      }
+    }
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    } else if (error.request) {
+      throw new Error('No response from server');
+    } else {
+      throw new Error(error.message);
+    }
+  }
+}
+
 // Function to clear all non-admin users
 export const clearAllNonAdminUsers = async () => {
   try {
@@ -156,5 +185,21 @@ export const clearAllNonAdminUsers = async () => {
     throw error;
   }
 };
+
+// Function to fetch current user
+export const me = async () => {
+  try {
+    const response = await api.get('/api/auth/me');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Me response:', response.data);
+    }
+    return response.data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Me error:', error.response?.data || error.message);
+    }
+    throw error;
+  }
+}
 
 export default api;

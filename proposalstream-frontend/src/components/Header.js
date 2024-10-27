@@ -53,7 +53,7 @@ function Header() {
 
     return navLinks.filter((link) => {
       // Check if any of the user's roles are included in the link's roles
-      const hasRole = user.roles.some((role) => link.roles.includes(role));
+      const hasRole = link.roles.includes(user.role);
       
       // Exclude specific links from the main navigation
       const excludeLinks = ['Upload Contract Template', 'Add Property'];
@@ -67,7 +67,7 @@ function Header() {
 
     // Include admin-specific links or other dynamic links as needed
     return navLinks.filter((link) => {
-      const hasRole = user.roles.some((role) => link.roles.includes(role));
+      const hasRole = link.roles.includes(user.role);
       const includeLinks = ['Admin Panel', 'Settings']; // Example additional links
       return hasRole && includeLinks.includes(link.name);
     });

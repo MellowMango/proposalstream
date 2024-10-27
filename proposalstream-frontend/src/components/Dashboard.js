@@ -1,20 +1,16 @@
-import React, { useContext } from 'react';
-import { Navigate, Link } from 'react-router-dom';
-import { AuthContext } from '../CombinedAuthContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../CombinedAuthContext';
 import navLinks from '../utils/navLinks'; // Import the centralized navLinks
 import './Dashboard.css'; // Import the CSS file for styling
 
 function Dashboard({ showNotification }) {
-  const { user } = useContext(AuthContext);
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+  const { user } = useAuth();
 
   // Function to filter links based on user roles and exclude the Home link
   const getFilteredLinks = () => {
     return navLinks.filter(
-      (link) => link.roles.some((role) => user.roles.includes(role)) && link.path !== '/'
+      (link) => link.roles.some((role) => user.role == role) && link.path !== '/'
     );
   };
 
@@ -62,17 +58,17 @@ function Dashboard({ showNotification }) {
       <p className="dashboard-greeting">Hello, {user.email}!</p>
       <div className="options-container">
         {/* Render Client Options if applicable */}
-        {(user.roles.includes('client') || user.roles.includes('admin')) &&
+        {(user.role === 'client' || user.role === 'admin') &&
           categorizedLinks.client.length > 0 &&
           createOptionCard('Client', categorizedLinks.client, 'client')}
 
         {/* Render Vendor Options if applicable */}
-        {(user.roles.includes('vendor') || user.roles.includes('admin')) &&
+        {(user.role === 'vendor' || user.role === 'admin') &&
           categorizedLinks.vendor.length > 0 &&
           createOptionCard('Vendor', categorizedLinks.vendor, 'vendor')}
 
         {/* Render Admin Options if applicable */}
-        {user.roles.includes('admin') &&
+        {user.role === 'admin' &&
           categorizedLinks.admin.length > 0 &&
           createOptionCard('Admin', categorizedLinks.admin, 'admin')}
       </div>

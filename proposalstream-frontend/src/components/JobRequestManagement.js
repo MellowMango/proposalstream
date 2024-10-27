@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import axiosInstance from '../utils/axiosInstance'; // Updated import
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from './Modal';
-import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../CombinedAuthContext';
+import api, { getBackendUrl } from '../utils/api';
+import { useAuth } from '../CombinedAuthContext';
 import VendorSelector from './VendorSelector';
 import './JobRequestManagement.css';
 
 function JobRequestManagement({ showNotification }) {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
   const [jobRequests, setJobRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,7 +20,7 @@ function JobRequestManagement({ showNotification }) {
     try {
       setLoading(true);
       const baseUrl = await getBackendUrl();
-      const response = await axiosInstance.get(`${baseUrl}/api/jobs?populate=proposal`);
+      const response = await api.get('/api/jobs?populate=proposal');
       if (response.data && Array.isArray(response.data.jobs)) {
         setJobRequests(response.data.jobs);
       } else {
@@ -41,7 +40,7 @@ function JobRequestManagement({ showNotification }) {
   const fetchVendors = useCallback(async () => {
     try {
       const baseUrl = await getBackendUrl();
-      const response = await axiosInstance.get(`${baseUrl}/api/vendors`);
+      const response = await api.get('/api/vendors');
       console.log('Vendors fetched:', response.data);
       setVendors(response.data);
     } catch (error) {
@@ -82,7 +81,7 @@ function JobRequestManagement({ showNotification }) {
     setLoading(true);
     try {
       const baseUrl = await getBackendUrl();
-      const response = await axiosInstance.get(`${baseUrl}/api/jobs/${jobRequest._id}`);
+      const response = await api.get('/api/jobs/${jobRequest._id}');
       setSelectedJobRequest(response.data);
       setIsModalOpen(true);
       setScopeOfWork(null);
@@ -120,7 +119,7 @@ function JobRequestManagement({ showNotification }) {
         baseUrl: baseUrl
       });
 
-      const response = await axiosInstance.post(`${baseUrl}/api/proposals`, formData, {
+      const response = await api.post('/api/proposals', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }
@@ -153,7 +152,7 @@ function JobRequestManagement({ showNotification }) {
     try {
       setLoading(true);
       const baseUrl = await getBackendUrl();
-      await axiosInstance.put(`${baseUrl}/api/jobs/${jobId}/approve-proposal`);
+      await api.put('/api/jobs/${jobId}/approve-proposal');
       showNotification('Proposal approved successfully', 'success');
       await fetchJobRequests();
       setIsModalOpen(false);
@@ -171,7 +170,7 @@ function JobRequestManagement({ showNotification }) {
       const baseUrl = await getBackendUrl();
       console.log('Deleting job request with baseUrl:', baseUrl);
 
-      await axiosInstance.delete(`${baseUrl}/api/jobs/${jobId}`);
+      await api.delete('/api/jobs/${jobId}');
       console.log('Delete response:', 'Success');
       showNotification('Job request deleted successfully', 'success');
       await fetchJobRequests();
@@ -198,7 +197,7 @@ function JobRequestManagement({ showNotification }) {
       formData.append('vendorId', vendorId);
       formData.append('scopeOfWork', scopeOfWork, scopeOfWork.name);
 
-      const response = await axiosInstance.put(`${baseUrl}/api/proposals/${jobId}/submit-revision`, formData, {
+      const response = await api.put('/api/proposals/${jobId}/submit-revision', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }

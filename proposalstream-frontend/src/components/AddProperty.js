@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { getBackendUrl } from '../utils/api';
-import { AuthContext } from '../CombinedAuthContext';
+import { useAuth } from '../CombinedAuthContext';
 import './AddProperty.css'; // Ensure this CSS file exists and is styled appropriately
 
 function AddProperty({ showNotification }) {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth;
   const [formData, setFormData] = useState({
     propertyName: '',
     propertyLLC: '',
