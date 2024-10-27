@@ -20,11 +20,6 @@ const Login = ({ showNotification }) => {
     console.log('Login component state:', { user, isLoading, error });
   }, [user, isLoading, error]);
 
-  const handleAzureLogin = () => {
-    console.log('Initiating Azure login');
-    initiateAzureLogin();
-  };
-
   const handleLogin = async () => {
     console.log('Logging in with:', loginForm);
 
@@ -80,14 +75,6 @@ const Login = ({ showNotification }) => {
 
       <hr />
       
-      <div className="form-group">
-        <button 
-          className="login-button" 
-          onClick={handleAzureLogin}
-        >
-          Sign in with Azure AD B2C
-        </button>
-      </div>
       <p className="register-prompt">
         Don't have an account? Contact your administrator.
       </p>
