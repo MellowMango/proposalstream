@@ -1,21 +1,78 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import logoAndName from '../assets/text/logo-and-name.png';
-import icon01 from '../assets/svg/icon-01.svg';
-import icon02 from '../assets/svg/icon-02.png';
-import icon03 from '../assets/svg/icon-03.png';
-import icon04 from '../assets/svg/icon-04.png';
-import iconsCheckmarkCircle from '../assets/svg/icons-checkmark-circle.png';
-import rectangle59 from '../assets/images/rectangle-59.png';
-import rectangle from '../assets/images/rectangle.png';
+import logoAndName from '../assets/images/logo-and-name.png';
+import heroBackground from '../assets/images/hero-background.jpg';
+import arrowDownIcon from '../assets/icons/arrow-down-icon.svg';
+import iconClearer from '../assets/icons/icon-clearer.svg';
+import iconFaster from '../assets/icons/icon-faster.svg';
+import iconFriendlier from '../assets/icons/icon-friendlier.svg';
+import iconAccurate from '../assets/icons/icon-accurate.svg';
+import iconSimpler from '../assets/icons/icon-simpler.svg';
+import iconCollaborative from '../assets/icons/icon-collaborative.svg';
+import iconTrackable from '../assets/icons/icon-trackable.svg';
 import "./HomePage.css";
+import { motion } from "framer-motion";
 
 const HomePage = () => {
+  useEffect(() => {
+    const handleScroll = () => {
+      const nav = document.querySelector(".nav-bar");
+      if (window.scrollY > 50) {
+        nav.classList.add("scrolled");
+      } else {
+        nav.classList.remove("scrolled");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Animation Variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: {
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3
+      }
+    }
+  };
+
   return (
     <div className="home-page">
       {/* Navigation Bar */}
       <nav className="nav-bar">
-        <img className="logo-and-name" alt="Logo and Company Name" src={logoAndName} />
+        <Link to="/">
+          <img 
+            className="logo-and-name" 
+            alt="ProposalStream Logo" 
+            src={logoAndName} 
+          />
+        </Link>
         <ul className="menu">
           <li className="menu-item">
             <Link to="/features">Features</Link>
@@ -29,200 +86,247 @@ const HomePage = () => {
           <li className="menu-item">
             <Link to="/contact">Contact</Link>
           </li>
-          {/* Added Login Button to Navbar */}
-          <li className="menu-item">
-            <Link to="/login" className="nav-login-button">Login</Link>
-          </li>
-          <li className="menu-item">
-            <Link to="/register" className="nav-signup-button">Sign Up</Link>
-          </li>
         </ul>
+        {/* Login and Sign Up Buttons */}
+        <div className="auth-buttons">
+          <Link to="/login" className="btn btn-secondary" aria-label="Login">
+            Login
+          </Link>
+          <Link to="/register" className="btn btn-primary" aria-label="Sign Up">
+            Sign Up
+          </Link>
+        </div>
       </nav>
       
       {/* Main Content */}
       <main className="main-content">
-        {/* Landing Section */}
-        <section className="landing-section">
-          {/* Property Management Frame */}
-          <div className="frame property-management">
-            <h1 className="title">Property<br />Management</h1>
-            <button className="cta-button">
-              <span>Learn More</span>
-            </button>
-            <img className="decorative-image small-image" alt="Decorative Rectangle" src={rectangle59} />
-          </div>
+        {/* Hero Section with Animations */}
+        <motion.section 
+          className="hero-section"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          style={{ backgroundImage: `url(${heroBackground})` }}
+        >
+          <motion.div 
+            className="hero-content"
+            variants={fadeInUp}
+          >
+            <h1 className="hero-title">
+              Streamline Your <br />Proposal Process
+            </h1>
+            <p className="hero-subtitle">
+              Connecting Property Managers and Vendors in a More Efficient Way.
+            </p>
+            <div className="hero-buttons">
+              <Link to="/register" className="btn btn-primary" aria-label="Get Started">
+                Get Started
+              </Link>
+              <Link to="/features" className="btn btn-secondary" aria-label="Learn More">
+                Learn More
+              </Link>
+            </div>
+          </motion.div>
+          {/* Scroll Down Icon */}
+          <motion.div 
+            className="scroll-down-icon"
+            animate={{ y: [0, 15, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <a href="#features">
+              <img src={arrowDownIcon} alt="Scroll Down" />
+            </a>
+          </motion.div>
+        </motion.section>
+        
+        {/* Features Section */}
+        <motion.section 
+          id="features"
+          className="features-section"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerContainer}
+        >
+          <motion.div 
+            className="section-header"
+            variants={fadeInUp}
+          >
+            <h2 className="section-title">Why Choose ProposalStream?</h2>
+            <p className="section-subtitle">
+              Experience a faster, clearer, and more collaborative way to manage proposals and contracts.
+            </p>
+          </motion.div>
 
-          {/* Vendors Frame */}
-          <div className="frame vendors">
-            <h1 className="title">Vendors</h1>
-            <button className="cta-button">
-              <span>Learn More</span>
-            </button>
-            <img className="decorative-image small-image" alt="Decorative Rectangle" src={rectangle} />
+          <div className="features-container">
+            {/* Features for Vendors */}
+            <motion.div 
+              className="features-column"
+              variants={fadeInUp}
+            >
+              <h3 className="column-title">For Vendors</h3>
+              <div className="attributes">
+                {/* Attribute Items */}
+                {[{
+                  icon: iconClearer,
+                  title: "Clearer",
+                  description: "Stand out to property managers with standardized, professional proposals tailored to their processes."
+                }, {
+                  icon: iconFaster,
+                  title: "Faster",
+                  description: "Automate everything but the scope, letting you focus on delivering high-quality proposals."
+                }, {
+                  icon: iconFriendlier,
+                  title: "Friendlier",
+                  description: "Enjoy real-time updates and improved collaboration for transparent communication with clients."
+                }, {
+                  icon: iconAccurate,
+                  title: "Accurate",
+                  description: "Reduce errors with automated data entry and validation features ensuring consistency."
+                }].map((item, index) => (
+                  <motion.div 
+                    className="attribute" 
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    variants={fadeInUp}
+                  >
+                    <img 
+                      className="attribute-icon" 
+                      alt={`${item.title} Icon`} 
+                      src={item.icon} 
+                    />
+                    <div className="attribute-content">
+                      <h4>{item.title}</h4>
+                      <p>{item.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Features for Property Managers */}
+            <motion.div 
+              className="features-column"
+              variants={fadeInUp}
+            >
+              <h3 className="column-title">For Property Managers</h3>
+              <div className="attributes">
+                {/* Attribute Items */}
+                {[{
+                  icon: iconSimpler,
+                  title: "Simpler",
+                  description: "Focus on the proposal's scope without getting bogged down by legal jargon until necessary."
+                }, {
+                  icon: iconFaster,
+                  title: "Faster",
+                  description: "Quickly generate contracts and streamline the entire proposal process."
+                }, {
+                  icon: iconCollaborative,
+                  title: "Collaborative",
+                  description: "Enhance collaboration with vendors for transparent and efficient scope creation."
+                }, {
+                  icon: iconTrackable,
+                  title: "Trackable",
+                  description: "Comprehensive tracking of contracts and change orders to prevent errors."
+                }].map((item, index) => (
+                  <motion.div 
+                    className="attribute" 
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    variants={fadeInUp}
+                  >
+                    <img 
+                      className="attribute-icon" 
+                      alt={`${item.title} Icon`} 
+                      src={item.icon} 
+                    />
+                    <div className="attribute-content">
+                      <h4>{item.title}</h4>
+                      <p>{item.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
         
-        {/* Content Section */}
-        <section className="content-section">
-          <div className="heading-logo">
-            <div className="heading-content">
-              <h2 className="heading-text">
-                400% Faster Proposal to Contract Conversion.<br />
-                Property Management and Vendors, More Connected Than Ever.
-              </h2>
-              <div className="cta-group">
-                <Link to="/register" className="cta-button">Sign Up</Link>
-                <Link to="/login" className="login-link">Login</Link>
-              </div>
-            </div>
+        {/* Call to Action Section */}
+        <motion.section 
+          className="cta-section"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeInUp}
+        >
+          <div className="cta-content">
+            <h2 className="cta-title">Ready to Transform Your Proposal Process?</h2>
+            <p className="cta-text">
+              Sign up for a demo today and discover how ProposalStream can revolutionize your business.
+            </p>
+            <Link to="#demo-form" className="btn btn-primary" aria-label="Apply for a Demo">
+              Apply for a Demo
+            </Link>
           </div>
-        </section>
-        
-        {/* Features for Vendors */}
-        <section className="blueprint-section">
-          <div className="heading-sub-heading">
-            <p className="sub-heading">Streamline Your Vendor-Property Manager Proposal To Contract Process Flow</p>
-            <h3 className="section-title">ProposalStream for Vendors</h3>
-          </div>
-          <div className="attributes">
-            {/* Attribute 1 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Clearer Icon" src={icon02} />
-              <div className="attribute-content">
-                <h4>Clearer</h4>
-                <p>
-                  Increases the chances of being noticed by property managers through a standardized format consistent
-                  with your client's process.
-                </p>
-              </div>
-            </div>
-            {/* Attribute 2 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Faster Icon" src={icon03} />
-              <div className="attribute-content">
-                <h4>Faster</h4>
-                <p>
-                  ProposalStream automates everything but the scope, allowing your team to focus on crafting
-                  high-quality proposals, stress-free.
-                </p>
-              </div>
-            </div>
-            {/* Attribute 3 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Friendlier Icon" src={icon04} />
-              <div className="attribute-content">
-                <h4>Friendlier</h4>
-                <p>
-                  Provides real-time updates on proposal status and enhances collaboration on scopes of work, ensuring
-                  clear communication and transparency for both vendors and clients.
-                </p>
-              </div>
-            </div>
-            {/* Attribute 4 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Accurate Icon" src={iconsCheckmarkCircle} />
-              <div className="attribute-content">
-                <h4>Accurate</h4>
-                <p>
-                  Minimizes errors with automated data entry and validation features.
-                  <br />
-                  Built-in checks reduce the risk of missing information and ensure data consistency.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Features for Property Managers */}
-        <section className="blueprint-section">
-          <div className="heading-sub-heading">
-            <h3 className="section-title">ProposalStream for Property Managers</h3>
-          </div>
-          <div className="attributes">
-            {/* Attribute 1 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Simpler Icon" src={icon02} />
-              <div className="attribute-content">
-                <h4>Simpler</h4>
-                <p>
-                  Lets property managers focus on the proposal's scope, avoiding legal jargon until contract review.
-                </p>
-              </div>
-            </div>
-            {/* Attribute 2 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Faster Icon" src={icon03} />
-              <div className="attribute-content">
-                <h4>Faster</h4>
-                <p>
-                  Streamlines the contract creation process, allowing property managers to quickly generate contracts
-                  with just a few clicks.
-                </p>
-              </div>
-            </div>
-            {/* Attribute 3 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Collaborative Icon" src={icon04} />
-              <div className="attribute-content">
-                <h4>Collaborative</h4>
-                <p>
-                  Enhances collaboration with vendors, making it easier for property managers to coordinate scope
-                  creation and ensuring changes to scope are fully transparent.
-                </p>
-              </div>
-            </div>
-            {/* Attribute 4 */}
-            <div className="attribute">
-              <img className="attribute-icon" alt="Trackable Icon" src={iconsCheckmarkCircle} />
-              <div className="attribute-content">
-                <h4>Trackable</h4>
-                <p>
-                  Offers comprehensive tracking of contracts and change orders, making it easy to view modifications
-                  alongside their corresponding standard agreements, thus preventing contractual errors.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Demo Section */}
-        <section className="demo-section">
-          <div className="content-2">
-            <div className="details">
-              <div className="heading-details">
-                <h2 className="get-in-touch">Sign up for a demo</h2>
-                <p className="description">
-                  Want to learn more about ProposalStream for your business? <br />
-                  Book a consultation with our team today!
-                </p>
-                <p className="latest-features">Want to learn about our latest features first?</p>
-              </div>
-              <Link to="/explore" className="explore-link">Explore Here</Link>
-            </div>
-            <form className="sub-heading-CTA">
+        </motion.section>
+
+        {/* Demo Application Form */}
+        <motion.section 
+          id="demo-form"
+          className="demo-form-section"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeIn}
+        >
+          <div className="demo-form-content">
+            <h2 className="section-title">Apply for a Demo</h2>
+            <p className="section-subtitle">
+              Fill out the form below, and we'll get back to you shortly.
+            </p>
+            <form className="demo-form" action="/apply-demo" method="post">
               <div className="form-group">
-                <label htmlFor="first-name">First Name</label>
-                <input className="input-field" id="first-name" placeholder="First Name" type="text" />
+                <label htmlFor="name">Name *</label>
+                <input type="text" id="name" name="name" required aria-required="true" />
               </div>
               <div className="form-group">
-                <label htmlFor="last-name">Last Name</label>
-                <input className="input-field" id="last-name" placeholder="Last Name" type="text" />
+                <label htmlFor="email">Email *</label>
+                <input type="email" id="email" name="email" required aria-required="true" />
               </div>
               <div className="form-group">
                 <label htmlFor="company">Company</label>
-                <input className="input-field" id="company" placeholder="Company" type="text" />
+                <input type="text" id="company" name="company" />
               </div>
               <div className="form-group">
-                <label htmlFor="interest">What made you interested in ProposalStream?</label>
-                <textarea className="input-field" id="interest" placeholder="Your interest..." />
+                <label htmlFor="message">Message *</label>
+                <textarea id="message" name="message" rows="5" required aria-required="true"></textarea>
               </div>
-              <button className="button">Book Consultation</button>
+              <button type="submit" className="btn btn-primary" aria-label="Submit Application">
+                Submit
+              </button>
             </form>
           </div>
-        </section>
+        </motion.section>
       </main>
       
-      {/* Removed Footer from here */}
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-content">
+          <img 
+            src={logoAndName} 
+            alt="ProposalStream Logo" 
+            className="footer-logo"
+          />
+          <p className="footer-text">
+            &copy; {new Date().getFullYear()} ProposalStream. All rights reserved.
+          </p>
+          <ul className="footer-menu">
+            <li><Link to="/privacy">Privacy Policy</Link></li>
+            <li><Link to="/terms">Terms of Service</Link></li>
+            <li><Link to="/contact">Contact Us</Link></li>
+          </ul>
+        </div>
+      </footer>
     </div>
   );
 };
