@@ -1,156 +1,106 @@
 // src/components/Header.js
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import navLinks from '../utils/navLinks'; // Import the centralized navLinks
-import { FaUserCircle } from 'react-icons/fa'; // Import profile icon from react-icons
-import './Header.css'; // Import the CSS file for styling
-import { useAuth } from '../CombinedAuthContext'; // Updated import
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  AppBar,
+  Toolbar,
+  Button,
+  Menu,
+  MenuItem,
+  Avatar,
+  Box,
+  Typography
+} from '@mui/material';
+import { useAuth } from '../CombinedAuthContext';
+import logo from '../assets/images/logo-and-name.png';
 
 function Header() {
-  // Access the unified authentication context
-  const { user, logout, initiateAzureLogin } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const menuRef = useRef(null);
-
-  const handleToggleMenu = () => {
-    setIsMenuOpen((prevState) => !prevState);
-    setIsDropdownOpen(false);
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleProfileClick = () => {
-    setIsDropdownOpen((prevState) => !prevState);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  // Close the dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
-        setIsDropdownOpen(false);
-      }
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        !event.target.closest('.hamburger')
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const getFilteredLinks = () => {
-    if (!user) return [];
-
-    return navLinks.filter((link) => {
-      // Check if any of the user's roles are included in the link's roles
-      const hasRole = link.roles.includes(user.role);
-      
-      // Exclude specific links from the main navigation
-      const excludeLinks = ['Upload Contract Template', 'Add Property'];
-
-      return hasRole && !excludeLinks.includes(link.name);
-    });
-  };
-
-  const getDropdownLinks = () => {
-    if (!user) return [];
-
-    // Include admin-specific links or other dynamic links as needed
-    return navLinks.filter((link) => {
-      const hasRole = link.roles.includes(user.role);
-      const includeLinks = ['Admin Panel', 'Settings']; // Example additional links
-      return hasRole && includeLinks.includes(link.name);
-    });
-  };
-
-  const handleLogout = () => {
-    logout();
-    setIsDropdownOpen(false);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      handleClose();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
-    <header>
-      <nav className="navbar">
-        <div className="nav-left">
-          <Link to="/" className="nav-logo">
-            YourApp
+    <AppBar position="static" color="transparent" elevation={1}>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Link to="/dashboard">
+            <img 
+              src={logo} 
+              alt="ProposalStream" 
+              style={{ height: '32px', width: 'auto' }}
+            />
           </Link>
-          <button
-            className="hamburger"
-            onClick={handleToggleMenu}
-            aria-label="Toggle navigation menu"
+          <Button
+            component={Link}
+            to="/dashboard"
+            color="inherit"
+            sx={{ textTransform: 'none' }}
           >
-            ☰
-          </button>
-          <ul
-            className={`nav-links ${isMenuOpen ? 'open' : ''}`}
-            ref={menuRef}
-          >
-            {getFilteredLinks().map((link) => (
-              <li key={link.path}>
-                <Link to={link.path} onClick={() => setIsMenuOpen(false)}>
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+            Dashboard
+          </Button>
+        </Box>
 
-        {/* User Actions */}
-        <div className="nav-right">
-          {user ? (
-            <div className="profile-dropdown" ref={dropdownRef}>
-              <button
-                className="profile-button"
-                onClick={handleProfileClick}
-                aria-label="User profile"
-                aria-haspopup="true"
-                aria-expanded={isDropdownOpen}
-              >
-                <FaUserCircle size={30} />
-              </button>
-              {isDropdownOpen && (
-                <ul className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-                  {/* Dynamically add dropdown links */}
-                  {getDropdownLinks().map((link) => (
-                    <li key={link.path}>
-                      <Link to={link.path} onClick={() => setIsDropdownOpen(false)}>
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="logout-button"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={initiateAzureLogin}
-              className="login-button"
+        {user && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="body2" color="textSecondary">
+              {user.email}
+            </Typography>
+            <Button
+              onClick={handleMenu}
+              color="inherit"
+              sx={{ textTransform: 'none' }}
+              startIcon={
+                <Avatar 
+                  sx={{ 
+                    width: 32, 
+                    height: 32, 
+                    bgcolor: 'primary.main' 
+                  }}
+                >
+                  {user.email[0].toUpperCase()}
+                </Avatar>
+              }
+            />
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
             >
-              Login
-            </button>
-          )}
-        </div>
-      </nav>
-    </header>
+              <MenuItem onClick={handleLogout}>
+                Sign Out
+              </MenuItem>
+            </Menu>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 }
 

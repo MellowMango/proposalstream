@@ -1,9 +1,65 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Modal from './Modal';
 import api from '../utils/api';
 import { useAuth } from '../CombinedAuthContext';
 import VendorSelector from './VendorSelector';
-import './JobRequestManagement.css';
+import {
+  Box,
+  Container,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Paper,
+  CircularProgress,
+  Alert,
+  Divider,
+  styled,
+  Stack,
+  IconButton,
+} from '@mui/material';
+import {
+  Delete as DeleteIcon,
+  CheckCircle as ApproveIcon,
+  Edit as ReviseIcon,
+  Upload as UploadIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
+
+// Styled components
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  maxWidth: 800,
+  margin: '20px auto',
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[2],
+}));
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+    cursor: 'pointer',
+  },
+}));
+
+const UploadButton = styled('label')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  padding: theme.spacing(1, 2),
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  borderRadius: theme.shape.borderRadius,
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+}));
 
 function JobRequestManagement({ showNotification }) {
   const { logout } = useAuth();
@@ -228,90 +284,181 @@ function JobRequestManagement({ showNotification }) {
     }
   };
 
+  // Custom Dialog Component
+  const CustomDialog = ({ open, onClose, children }) => (
+    <Dialog 
+      open={open} 
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle sx={{ pr: 6 }}>
+        Job Request Details
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        {children}
+      </DialogContent>
+    </Dialog>
+  );
+
   if (loading) {
-    return <div>Loading job requests...</div>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <Container>
+        <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
+      </Container>
+    );
   }
 
   return (
-    <div className="job-request-management">
-      <h2>Job Management</h2>
-      {!Array.isArray(jobRequests) ? (
-        <p>Error: Invalid job requests data</p>
-      ) : jobRequests.length === 0 ? (
-        <p>No job requests available.</p>
-      ) : (
-        <ul>
-          {jobRequests.map((jobRequest) => (
-            <li key={jobRequest._id} onClick={() => handleJobRequestClick(jobRequest)}>
-              Building: {jobRequest.building || 'Unknown Building'} - 
-              Client: {jobRequest.client || 'Unknown Client'} - 
-              Status: {jobRequest.status || 'Pending'} - 
-              Proposal: {jobRequest.proposal ? 
-                (jobRequest.proposal.status === 'Deleted' ? 'Deleted' : 'Submitted') : 
-                'Not Submitted'}
-            </li>
-          ))}
-        </ul>
-      )}
+    <Container>
+      <StyledPaper>
+        <Typography variant="h4" component="h2" gutterBottom align="center">
+          Job Management
+        </Typography>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {selectedJobRequest && (
-          <div>
-            <h3>Job Request Details</h3>
-            <p>Building: {selectedJobRequest.building || 'Unknown'}</p>
-            <p>Client: {selectedJobRequest.client || 'Unknown'}</p>
-            <p>Request Details: {selectedJobRequest.requestDetails || 'Not provided'}</p>
-            <p>Service Type: {selectedJobRequest.serviceType || 'Not specified'}</p>
-            <p>Status: {selectedJobRequest.status || 'Pending'}</p>
-            
-            {!selectedJobRequest.proposal && (
-              <div>
-                <h4>Submit New Proposal</h4>
-                <input type="file" onChange={handleFileChange} accept=".pdf" />
-                <VendorSelector 
-                  selectedVendor={vendorId} 
-                  onVendorChange={setVendorId}
-                  vendors={vendors}  // Add this prop
+        {!Array.isArray(jobRequests) ? (
+          <Alert severity="error">Invalid job requests data</Alert>
+        ) : jobRequests.length === 0 ? (
+          <Alert severity="info">No job requests available.</Alert>
+        ) : (
+          <List>
+            {jobRequests.map((jobRequest) => (
+              <StyledListItem 
+                key={jobRequest._id} 
+                onClick={() => handleJobRequestClick(jobRequest)}
+              >
+                <ListItemText
+                  primary={
+                    <Typography variant="subtitle1">
+                      Building: {jobRequest.building || 'Unknown Building'}
+                    </Typography>
+                  }
+                  secondary={
+                    <Stack spacing={1}>
+                      <Typography variant="body2">
+                        Client: {jobRequest.client || 'Unknown Client'}
+                      </Typography>
+                      <Typography variant="body2">
+                        Status: {jobRequest.status || 'Pending'}
+                      </Typography>
+                      <Typography variant="body2">
+                        Proposal: {jobRequest.proposal ? 
+                          (jobRequest.proposal.status === 'Deleted' ? 'Deleted' : 'Submitted') : 
+                          'Not Submitted'}
+                      </Typography>
+                    </Stack>
+                  }
                 />
-                <button onClick={handleSubmitProposal} disabled={loading || !scopeOfWork || !vendorId}>
-                  {loading ? 'Submitting...' : 'Submit Proposal'}
-                </button>
-              </div>
-            )}
-            
-            {selectedJobRequest.proposal && (
-              <div>
-                <button 
-                  onClick={() => handleApproveProposal(selectedJobRequest._id)} 
-                  disabled={loading}
-                >
-                  {loading ? 'Approving...' : 'Approve Proposal'}
-                </button>
-                
-                <button 
-                  onClick={() => handleReviseProposal(selectedJobRequest._id)} 
-                  disabled={loading}
-                >
-                  {loading ? 'Revising...' : 'Revise Proposal'}
-                </button>
-              </div>
-            )}
-            
-            {/* Delete Job Request button */}
-            <button 
-              onClick={() => handleDeleteJobRequest(selectedJobRequest._id)} 
-              disabled={loading}
-            >
-              {loading ? 'Deleting...' : 'Delete Job Request'}
-            </button>
-          </div>
+              </StyledListItem>
+            ))}
+          </List>
         )}
-      </Modal>
-    </div>
+
+        <CustomDialog 
+          open={isModalOpen} 
+          onClose={() => setIsModalOpen(false)}
+        >
+          {selectedJobRequest && (
+            <Stack spacing={3}>
+              <Typography variant="h6">Details</Typography>
+              <Stack spacing={2}>
+                <Typography>Building: {selectedJobRequest.building || 'Unknown'}</Typography>
+                <Typography>Client: {selectedJobRequest.client || 'Unknown'}</Typography>
+                <Typography>Request Details: {selectedJobRequest.requestDetails || 'Not provided'}</Typography>
+                <Typography>Service Type: {selectedJobRequest.serviceType || 'Not specified'}</Typography>
+                <Typography>Status: {selectedJobRequest.status || 'Pending'}</Typography>
+              </Stack>
+
+              <Divider />
+
+              {!selectedJobRequest.proposal ? (
+                <Box>
+                  <Typography variant="h6" gutterBottom>Submit New Proposal</Typography>
+                  <Stack spacing={2}>
+                    <UploadButton>
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        accept=".pdf"
+                        style={{ display: 'none' }}
+                        id="scope-of-work-upload"
+                      />
+                      <UploadIcon />
+                      {scopeOfWork ? scopeOfWork.name : 'Upload Scope of Work'}
+                    </UploadButton>
+
+                    <VendorSelector 
+                      selectedVendor={vendorId} 
+                      onVendorChange={setVendorId}
+                      vendors={vendors}
+                    />
+
+                    <Button
+                      variant="contained"
+                      onClick={handleSubmitProposal}
+                      disabled={loading || !scopeOfWork || !vendorId}
+                      startIcon={loading ? <CircularProgress size={20} /> : null}
+                    >
+                      {loading ? 'Submitting...' : 'Submit Proposal'}
+                    </Button>
+                  </Stack>
+                </Box>
+              ) : (
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => handleApproveProposal(selectedJobRequest._id)}
+                    disabled={loading}
+                    startIcon={<ApproveIcon />}
+                  >
+                    {loading ? 'Approving...' : 'Approve Proposal'}
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    color="info"
+                    onClick={() => handleReviseProposal(selectedJobRequest._id)}
+                    disabled={loading}
+                    startIcon={<ReviseIcon />}
+                  >
+                    {loading ? 'Revising...' : 'Revise Proposal'}
+                  </Button>
+                </Stack>
+              )}
+
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => handleDeleteJobRequest(selectedJobRequest._id)}
+                disabled={loading}
+                startIcon={<DeleteIcon />}
+              >
+                {loading ? 'Deleting...' : 'Delete Job Request'}
+              </Button>
+            </Stack>
+          )}
+        </CustomDialog>
+      </StyledPaper>
+    </Container>
   );
 }
 
