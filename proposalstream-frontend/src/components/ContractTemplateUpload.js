@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import DocumentViewer from './DocumentViewer';
 import mammoth from 'mammoth';
@@ -23,15 +23,7 @@ function ContractTemplateUpload({ showNotification }) {
   const [viewingTemplate, setViewingTemplate] = useState(null);
   const [editingTemplate, setEditingTemplate] = useState(null);
 
-  useEffect(() => {
-    const init = async () => {
-      await fetchTemplates();
-      await fetchAvailableFields();
-    };
-    init();
-  }, [fetchTemplates, fetchAvailableFields]);
-
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
       const response = await api.get('/api/contract-templates');
       setTemplates(response.data);
@@ -39,9 +31,9 @@ function ContractTemplateUpload({ showNotification }) {
       console.error('Error fetching templates:', error);
       showNotification(`Error fetching templates: ${error.response?.data?.message || error.message}`, 'error');
     }
-  };
+  }, [showNotification]);
 
-  const fetchAvailableFields = async () => {
+  const fetchAvailableFields = useCallback(async () => {
     try {
       const response = await api.get('/api/contract-templates/available-fields');
       setAvailableFields(response.data);
@@ -49,7 +41,15 @@ function ContractTemplateUpload({ showNotification }) {
       console.error('Error fetching available fields:', error);
       showNotification(`Error fetching available fields: ${error.response?.data?.message || error.message}`, 'error');
     }
-  };
+  }, [showNotification]);
+
+  useEffect(() => {
+    const init = async () => {
+      await fetchTemplates();
+      await fetchAvailableFields();
+    };
+    init();
+  }, [fetchTemplates, fetchAvailableFields]);
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];

@@ -146,7 +146,7 @@ function JobRequestManagement({ showNotification }) {
   const handleApproveProposal = async (jobId) => {
     try {
       setLoading(true);
-      await api.put('/api/jobs/${jobId}/approve-proposal');
+      await api.put(`/api/jobs/${jobId}/approve-proposal`);
       showNotification('Proposal approved successfully', 'success');
       await fetchJobRequests();
       setIsModalOpen(false);
@@ -161,7 +161,7 @@ function JobRequestManagement({ showNotification }) {
   const handleDeleteJobRequest = async (jobId) => {
     try {
       setLoading(true);
-      await api.delete('/api/jobs/${jobId}');
+      await api.delete(`/api/jobs/${jobId}`);
       console.log('Delete response:', 'Success');
       showNotification('Job request deleted successfully', 'success');
       await fetchJobRequests();
@@ -187,7 +187,7 @@ function JobRequestManagement({ showNotification }) {
       formData.append('vendorId', vendorId);
       formData.append('scopeOfWork', scopeOfWork, scopeOfWork.name);
 
-      const response = await api.put('/api/proposals/${jobId}/submit-revision', formData, {
+      await api.put(`/api/proposals/${jobId}/submit-revision`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }
@@ -272,9 +272,31 @@ function JobRequestManagement({ showNotification }) {
               <div>
                 <h4>Submit New Proposal</h4>
                 <input type="file" onChange={handleFileChange} accept=".pdf" />
-                <VendorSelector selectedVendor={vendorId} onVendorChange={setVendorId} />
+                <VendorSelector 
+                  selectedVendor={vendorId} 
+                  onVendorChange={setVendorId}
+                  vendors={vendors}  // Add this prop
+                />
                 <button onClick={handleSubmitProposal} disabled={loading || !scopeOfWork || !vendorId}>
                   {loading ? 'Submitting...' : 'Submit Proposal'}
+                </button>
+              </div>
+            )}
+            
+            {selectedJobRequest.proposal && (
+              <div>
+                <button 
+                  onClick={() => handleApproveProposal(selectedJobRequest._id)} 
+                  disabled={loading}
+                >
+                  {loading ? 'Approving...' : 'Approve Proposal'}
+                </button>
+                
+                <button 
+                  onClick={() => handleReviseProposal(selectedJobRequest._id)} 
+                  disabled={loading}
+                >
+                  {loading ? 'Revising...' : 'Revise Proposal'}
                 </button>
               </div>
             )}

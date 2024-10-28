@@ -62,11 +62,9 @@ function JobRequestForm({ showNotification }) {
         requestDetails: formData.requestDetails,
         serviceType: formData.serviceType,
         vendorId: formData.vendorId,
-        // Remove 'client' from payload since backend attaches it automatically
-        // client: user._id,
       };
 
-      const response = await api.post('/api/jobs', payload);
+      await api.post('/api/jobs', payload);
 
       showNotification('Job request submitted successfully', 'success');
       setFormData({

@@ -211,7 +211,6 @@ function ContractManagement({ showNotification }) {
       const response = await api.put(`/api/jobs/${jobId}/request-revision`);
       console.log('Response:', response.data);
       
-      const updatedJob = response.data.job;
       const updatedProposal = response.data.proposal;
 
       // Update the local state immediately
