@@ -32,7 +32,7 @@ jobs:
           cd ./proposalstream-frontend
           npm install
           npm run build
-          npm test --passWithNoTests
+          CI=true npm test -- --passWithNoTests
 
       - name: Install and build backend
         env:
@@ -72,9 +72,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E59E38541ED94CBE9B92B6AD616EC1C9 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4C2315A7FF3B40E79461F504EAB383A6 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_621DA2FA5A534D5C9A14690C9BFB520F }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
