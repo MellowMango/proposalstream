@@ -46,7 +46,7 @@ jobs:
           cd ./proposalstream-backend
           npm install
           npm run build --if-present
-          npm test --passWithNoTests
+          SKIP_DB_CHECK=true npm test --passWithNoTests
 
       - name: Zip artifact for deployment
         run: zip -r release.zip ./proposalstream-frontend/build ./proposalstream-backend

@@ -24,12 +24,15 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-if (!CONTRACT_TEMPLATES_CONTAINER) {
+// Add at the top with other environment variables
+const SKIP_DB_CHECK = process.env.SKIP_DB_CHECK === 'true';
+
+if (!CONTRACT_TEMPLATES_CONTAINER && !SKIP_DB_CHECK) {
   logger.error('CONTRACT_TEMPLATES_CONTAINER is not defined in environment variables.');
   process.exit(1);
 }
 
-if (!PROPERTY_COI_CONTAINER) {
+if (!PROPERTY_COI_CONTAINER && !SKIP_DB_CHECK) {
   logger.error('PROPERTY_COI_CONTAINER is not defined in environment variables.');
   process.exit(1);
 }
