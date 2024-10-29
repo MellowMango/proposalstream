@@ -26,6 +26,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
 import PricingPage from './components/PricingPage';
+import ContactPage from './components/ContactPage';
 
 function App() {
   console.log("Rendering App component");
@@ -164,6 +165,9 @@ function App() {
 
                     {/* Pricing Page */}
                     <Route path="/pricing" element={<PricingPage />} />
+
+                    {/* Contact Page */}
+                    <Route path="/contact" element={<ContactPage />} />
                   </Routes>
                 </main>
               </div>
