@@ -1,0 +1,97 @@
+/* Only keeping styles specific to the contact page that aren't in HomePage.css */
+
+.contact-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-section {
+  padding-top: 80px; /* Match nav-bar height */
+  background-color: var(--secondary);
+  color: var(--background-white);
+  text-align: center;
+  position: relative;
+}
+
+.contact-form-section {
+  padding: 4rem 5%;
+  background-color: var(--background-light);
+}
+
+.demo-form-section {
+  background-color: var(--background-light);
+  padding-top: 0; /* Reduce top padding since we have the hero section */
+}
+
+.demo-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  background: var(--background-white);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-default);
+}
+
+.demo-form:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.demo-form .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.demo-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--background-white);
+  resize: vertical;
+  min-height: 120px;
+}
+
+.demo-form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.success-message,
+.error-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-message {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.error-message {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 30vh !important;
+  }
+}

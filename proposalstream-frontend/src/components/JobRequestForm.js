@@ -3,7 +3,46 @@ import api from '../utils/api';
 import { Link } from 'react-router-dom';
 import VendorSelector from './VendorSelector';
 import AddVendorModal from './AddVendorModal';
-import './JobRequestForm.css';
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Paper,
+  Alert,
+  styled,
+} from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
+
+// Styled components
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  maxWidth: 700,
+  margin: '40px auto',
+  padding: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[2],
+}));
+
+const FormContainer = styled('form')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(3),
+}));
+
+const VendorSelectorWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  gap: theme.spacing(2),
+  alignItems: 'center',
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+  },
+}));
 
 function JobRequestForm({ showNotification }) {
   const [formData, setFormData] = useState({
@@ -62,12 +101,9 @@ function JobRequestForm({ showNotification }) {
         requestDetails: formData.requestDetails,
         serviceType: formData.serviceType,
         vendorId: formData.vendorId,
-        // Remove 'client' from payload since backend attaches it automatically
-        // client: user._id,
       };
 
-      const response = await api.post('/api/jobs', payload);
-
+      await api.post('/api/jobs', payload);
       showNotification('Job request submitted successfully', 'success');
       setFormData({
         propertyId: '',
@@ -87,108 +123,112 @@ function JobRequestForm({ showNotification }) {
   };
 
   return (
-    <div className="job-request-form-container">
-      <h2 className="form-title">New Job Request</h2>
-      {properties.length === 0 && (
-        <div className="alert-warning">
-          <p>
+    <Container>
+      <StyledPaper>
+        <Typography variant="h4" component="h2" gutterBottom align="center" 
+          sx={{ mb: 3, fontWeight: 600 }}>
+          New Job Request
+        </Typography>
+
+        {properties.length === 0 && (
+          <Alert severity="warning" sx={{ mb: 3 }}>
             No properties found. Please{' '}
-            <Link to="/add-property" className="alert-link" onClick={() => window.scrollTo(0, 0)}>
+            <Link to="/add-property" style={{ color: 'inherit', fontWeight: 600 }}>
               add a property
             </Link>
             .
-          </p>
-        </div>
-      )}
-      <form className="job-request-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="property" className="form-label">
-            Property:
-          </label>
-          <select
-            id="property"
-            name="propertyId"
-            value={formData.propertyId}
-            onChange={handleChange}
-            className="form-select"
-            required
-            disabled={properties.length === 0}
-          >
-            <option value="">Select a Property</option>
-            {properties.map((property) => (
-              <option key={property._id} value={property._id}>
-                {property.propertyName}
-              </option>
-            ))}
-          </select>
-        </div>
+          </Alert>
+        )}
 
-        <div className="form-group">
-          <label htmlFor="requestDetails" className="form-label">
-            Request Details:
-          </label>
-          <textarea
+        <FormContainer onSubmit={handleSubmit}>
+          <FormControl fullWidth>
+            <InputLabel id="property-label">Property</InputLabel>
+            <Select
+              labelId="property-label"
+              id="property"
+              name="propertyId"
+              value={formData.propertyId}
+              onChange={handleChange}
+              required
+              disabled={properties.length === 0}
+              label="Property"
+            >
+              <MenuItem value="">
+                <em>Select a Property</em>
+              </MenuItem>
+              {properties.map((property) => (
+                <MenuItem key={property._id} value={property._id}>
+                  {property.propertyName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <TextField
             id="requestDetails"
             name="requestDetails"
+            label="Request Details"
+            multiline
+            rows={4}
             value={formData.requestDetails}
             onChange={handleChange}
-            className="form-textarea"
             required
             placeholder="Describe your job request in detail"
-            rows="4"
-          ></textarea>
-        </div>
+            fullWidth
+          />
 
-        <div className="form-group">
-          <label htmlFor="serviceType" className="form-label">
-            Service Type:
-          </label>
-          <input
-            type="text"
+          <TextField
             id="serviceType"
             name="serviceType"
+            label="Service Type"
             value={formData.serviceType}
             onChange={handleChange}
-            className="form-input"
             required
             placeholder="e.g., Plumbing, Electrical"
+            fullWidth
           />
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="vendor" className="form-label">
-            Select Vendor:
-          </label>
-          <div className="vendor-selector-wrapper">
-            <VendorSelector selectedVendor={formData.vendorId} onVendorChange={handleVendorChange} />
-            <button
-              type="button"
-              className="add-vendor-button"
+          <VendorSelectorWrapper>
+            <Box flexGrow={1}>
+              <VendorSelector 
+                selectedVendor={formData.vendorId} 
+                onVendorChange={handleVendorChange}
+              />
+            </Box>
+            <Button
+              variant="contained"
+              color="secondary"
               onClick={() => setIsAddVendorModalOpen(true)}
+              startIcon={<AddIcon />}
             >
-              + Add New Vendor
-            </button>
-          </div>
-        </div>
+              Add New Vendor
+            </Button>
+          </VendorSelectorWrapper>
 
-        <div className="form-group">
-          <button type="submit" className="submit-button" disabled={loading}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            disabled={loading}
+            sx={{ mt: 2 }}
+          >
             {loading ? 'Submitting...' : 'Submit Job Request'}
-          </button>
-        </div>
-      </form>
+          </Button>
+        </FormContainer>
 
-      {isAddVendorModalOpen && (
-        <AddVendorModal
-          onClose={() => setIsAddVendorModalOpen(false)}
-          onVendorAdded={(newVendor) => {
-            handleVendorChange(newVendor._id);
-            setIsAddVendorModalOpen(false);
-            showNotification('Vendor added successfully', 'success');
-          }}
-        />
-      )}
-    </div>
+        {isAddVendorModalOpen && (
+          <AddVendorModal
+            onClose={() => setIsAddVendorModalOpen(false)}
+            onVendorAdded={(newVendor) => {
+              handleVendorChange(newVendor._id);
+              setIsAddVendorModalOpen(false);
+              showNotification('Vendor added successfully', 'success');
+            }}
+          />
+        )}
+      </StyledPaper>
+    </Container>
   );
 }
 

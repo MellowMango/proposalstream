@@ -1,49 +1,31 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  CardActions,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  AppBar,
-  Toolbar,
-  useScrollTrigger,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { motion } from "framer-motion";
-
-// Import your assets
+import { Link } from "react-router-dom";
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../theme';
 import logoAndName from '../assets/images/logo-and-name.png';
-
-// Styled components
-const PricingCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(3),
-  transition: 'transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-8px)',
-    boxShadow: theme.shadows[8],
-  }
-}));
+import { motion } from "framer-motion";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import "./PricingPage.css";
 
 const PricingPage = () => {
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 50,
-  });
+  // Animation variants (keep existing variants)
+  
+  const vendorFeatures = [
+    "Unlimited proposal submissions",
+    "Professional proposal templates",
+    "Real-time collaboration tools",
+    "Automated contract generation",
+    "Document tracking & management"
+  ];
 
-  // Animation variants
+  const pmFeatures = [
+    "Dedicated account manager",
+    "Custom workflow automation",
+    "Advanced reporting & analytics",
+    "Priority support",
+    "Team training & onboarding"
+  ];
+
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { 
@@ -66,262 +48,130 @@ const PricingPage = () => {
     }
   };
 
-  const vendorFeatures = [
-    "Unlimited proposal submissions",
-    "Professional proposal templates",
-    "Real-time collaboration tools",
-    "Automated contract generation",
-    "Document tracking & management",
-    "24/7 customer support",
-    "Mobile app access",
-    "Integration with common accounting software"
-  ];
-
   return (
-    <Box>
-      {/* Navigation */}
-      <AppBar 
-        position="fixed" 
-        elevation={trigger ? 4 : 0}
-        sx={{
-          bgcolor: trigger ? 'background.default' : 'transparent',
-          transition: 'all 0.3s',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <RouterLink to="/">
-              <Box
-                component="img"
-                src={logoAndName}
-                alt="ProposalStream Logo"
-                sx={{ height: 40 }}
-              />
-            </RouterLink>
+    <ThemeProvider theme={theme}>
+      <div className="pricing-page">
+        {/* Navigation Bar */}
+        <nav className="nav-bar">
+          <Link to="/">
+            <img className="logo-and-name" alt="ProposalStream Logo" src={logoAndName} />
+          </Link>
+          <ul className="menu">
+            <li className="menu-item"><Link to="/features">Features</Link></li>
+            <li className="menu-item"><Link to="/pricing">Pricing</Link></li>
+            <li className="menu-item"><Link to="/contact">Contact</Link></li>
+          </ul>
+          <div className="auth-buttons">
+            <Link to="/login" className="btn btn-secondary">Login</Link>
+            <Link to="/register" className="btn btn-primary">Sign Up</Link>
+          </div>
+        </nav>
 
-            <Box sx={{ display: 'flex', gap: 3 }}>
-              {['Features', 'Pricing', 'Contact'].map((item) => (
-                <Button
-                  key={item}
-                  component={RouterLink}
-                  to={`/${item.toLowerCase()}`}
-                  color="inherit"
-                  sx={{ textTransform: 'none' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </Box>
+        {/* Main Content */}
+        <main className="main-content">
+          <motion.section 
+            className="pricing-header"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp}>
+              <h1>Simple, Transparent Pricing</h1>
+              <p>Choose the plan that's right for your business</p>
+            </motion.div>
+          </motion.section>
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button
-                component={RouterLink}
-                to="/login"
-                variant="outlined"
-                color="inherit"
-                sx={{ textTransform: 'none' }}
-              >
-                Login
-              </Button>
-              <Button
-                component={RouterLink}
-                to="/register"
-                variant="contained"
-                color="primary"
-                sx={{ textTransform: 'none' }}
-              >
-                Sign Up
-              </Button>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
+          <motion.section 
+            className="pricing-cards"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
+            {/* Vendor Card - now featured */}
+            <motion.div className="pricing-card featured" variants={fadeInUp}>
+              <div className="card-header">
+                <h2>Vendors</h2>
+                <div className="price">
+                  <span className="amount">$100</span>
+                  <span className="period">/month</span>
+                </div>
+              </div>
+              <ul className="features-list">
+                {vendorFeatures.map((feature, index) => (
+                  <li key={index}>
+                    <CheckCircleIcon className="check-icon" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link to="/register" className="btn btn-primary glow-effect">
+                Start Free Trial
+              </Link>
+            </motion.div>
 
-      {/* Main Content */}
-      <Container 
-        component={motion.main}
-        maxWidth="lg" 
-        sx={{ pt: 15, pb: 8 }}
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-      >
-        {/* Header */}
-        <Box 
-          component={motion.div}
-          variants={fadeInUp}
-          sx={{ textAlign: 'center', mb: 8 }}
-        >
-          <Typography variant="h2" component="h1" gutterBottom>
-            Simple, Transparent Pricing
-          </Typography>
-          <Typography variant="h5" color="text.secondary" sx={{ mb: 4 }}>
-            Choose the plan that's right for your business
-          </Typography>
-        </Box>
+            {/* Property Manager Card - now enterprise */}
+            <motion.div className="pricing-card enterprise" variants={fadeInUp}>
+              <div className="card-header">
+                <h2>Property Managers</h2>
+                <div className="price">
+                  <span className="amount">Enterprise</span>
+                </div>
+                <p className="enterprise-desc">
+                  Pricing is based on your portfolio size and specific needs.
+                </p>
+              </div>
+              <ul className="features-list">
+                {pmFeatures.map((feature, index) => (
+                  <li key={index}>
+                    <CheckCircleIcon className="check-icon" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </motion.section>
 
-        {/* Pricing Cards */}
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={4}
-          alignItems="stretch"
-          justifyContent="center"
-        >
-          {/* Vendor Card */}
-          <Box
-            component={motion.div}
+          <motion.section 
+            className="faq-section"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
             variants={fadeInUp}
-            sx={{ width: { xs: '100%', md: '45%' } }}
           >
-            <PricingCard>
-              <CardContent>
-                <Typography variant="h4" component="h2" gutterBottom>
-                  Vendors
-                </Typography>
-                <Typography variant="h3" component="div" sx={{ mb: 2 }}>
-                  $100
-                  <Typography variant="subtitle1" component="span" color="text.secondary">
-                    /month
-                  </Typography>
-                </Typography>
-                <List>
-                  {vendorFeatures.map((feature, index) => (
-                    <ListItem key={index} sx={{ py: 1 }}>
-                      <ListItemIcon>
-                        <CheckCircleIcon color="primary" />
-                      </ListItemIcon>
-                      <ListItemText primary={feature} />
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-              <CardActions sx={{ mt: 'auto', justifyContent: 'center', pb: 3 }}>
-                <Button
-                  component={RouterLink}
-                  to="/register"
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                >
-                  Start Free Trial
-                </Button>
-              </CardActions>
-            </PricingCard>
-          </Box>
+            <h2>Need Assistance?</h2>
+            <p>Our team is ready to help you get started</p>
+            <div className="contact-buttons">
+              <Link to="/contact/email" className="btn btn-primary glow-effect">
+                Contact via Email
+              </Link>
+              <a 
+                href="https://calendly.com/maxphelps/proposalstream-support-call" 
+                className="btn btn-secondary glow-effect"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Schedule a Call
+              </a>
+            </div>
+          </motion.section>
+        </main>
 
-          {/* Property Manager Card */}
-          <Box
-            component={motion.div}
-            variants={fadeInUp}
-            sx={{ width: { xs: '100%', md: '45%' } }}
-          >
-            <PricingCard>
-              <CardContent>
-                <Typography variant="h4" component="h2" gutterBottom>
-                  Property Managers
-                </Typography>
-                <Typography variant="h3" component="div" sx={{ mb: 2 }}>
-                  Enterprise
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 3 }}>
-                  Custom pricing based on your portfolio size and specific needs. Our enterprise solution includes:
-                </Typography>
-                <List>
-                  {[
-                    "Dedicated account manager",
-                    "Custom workflow automation",
-                    "Advanced reporting & analytics",
-                    "API access",
-                    "Priority support",
-                    "Custom integrations",
-                    "Team training & onboarding",
-                    "SLA guarantees"
-                  ].map((feature, index) => (
-                    <ListItem key={index} sx={{ py: 1 }}>
-                      <ListItemIcon>
-                        <CheckCircleIcon color="primary" />
-                      </ListItemIcon>
-                      <ListItemText primary={feature} />
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-              <CardActions sx={{ mt: 'auto', justifyContent: 'center', pb: 3 }}>
-                <Button
-                  component={RouterLink}
-                  to="/contact"
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                >
-                  Book a Demo
-                </Button>
-              </CardActions>
-            </PricingCard>
-          </Box>
-        </Stack>
-
-        {/* FAQ Section */}
-        <Box
-          component={motion.section}
-          variants={fadeInUp}
-          sx={{ mt: 8, textAlign: 'center' }}
-        >
-          <Typography variant="h3" gutterBottom>
-            Questions?
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            Contact our sales team for more information about our enterprise solutions.
-          </Typography>
-          <Button
-            component={RouterLink}
-            to="/contact"
-            variant="outlined"
-            size="large"
-          >
-            Contact Sales
-          </Button>
-        </Box>
-      </Container>
-
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          py: 6,
-          bgcolor: 'background.paper',
-          borderTop: 1,
-          borderColor: 'divider'
-        }}
-      >
-        <Container maxWidth="lg">
-          <Stack spacing={3} alignItems="center">
-            <Box
-              component="img"
-              src={logoAndName}
-              alt="ProposalStream Logo"
-              sx={{ height: 40 }}
-            />
-            <Typography variant="body2" color="text.secondary">
-              © {new Date().getFullYear()} ProposalStream. All rights reserved.
-            </Typography>
-            <Stack direction="row" spacing={3}>
-              {['Privacy Policy', 'Terms of Service', 'Contact Us'].map((item) => (
-                <Button
-                  key={item}
-                  component={RouterLink}
-                  to={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                  color="inherit"
-                  sx={{ textTransform: 'none' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </Stack>
-          </Stack>
-        </Container>
-      </Box>
-    </Box>
+        {/* Footer */}
+        <footer className="footer">
+          <div className="footer-content">
+            <img src={logoAndName} alt="ProposalStream Logo" className="footer-logo" />
+            <p className="footer-text">
+              &copy; {new Date().getFullYear()} ProposalStream. All rights reserved.
+            </p>
+            <ul className="footer-menu">
+              <li><Link to="/privacy">Privacy Policy</Link></li>
+              <li><Link to="/terms">Terms of Service</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
+            </ul>
+          </div>
+        </footer>
+      </div>
+    </ThemeProvider>
   );
 };
 
