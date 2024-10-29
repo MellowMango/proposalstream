@@ -27,13 +27,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
 import PricingPage from './components/PricingPage';
 import ContactPage from './components/ContactPage';
-import { motion } from 'framer-motion';
-
-const pageTransition = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 }
-};
 
 function App() {
   console.log("Rendering App component");

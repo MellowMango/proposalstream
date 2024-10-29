@@ -96,18 +96,6 @@ const HomePage = () => {
     });
   };
 
-  // Enhanced hover effect for attributes
-  const attributeHover = {
-    rest: { scale: 1 },
-    hover: { 
-      scale: 1.02,
-      transition: {
-        duration: 0.3,
-        ease: [0.34, 1.56, 0.64, 1]
-      }
-    }
-  };
-
   return (
     <div className="home-page">
       {/* Navigation Bar with Gradient Background */}
