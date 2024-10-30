@@ -97,4 +97,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: .
-          startup-command: 'npm start'
+          startup-command: 'cd proposalstream-backend && npm start'
+          slot-name: 'production'
