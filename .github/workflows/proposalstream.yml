@@ -83,9 +83,26 @@ jobs:
           enable-AzPSSession: true
           audience: 'api://AzureADTokenExchange'
 
+      - name: Test Azure Connection
+        run: |
+          az webapp list --query "[?name=='${{ env.AZURE_WEBAPP_NAME }}']"
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: .
+          slot-name: 'production'
+          startup-command: 'npm start'
+
+      - name: Log Deployment Info
+        run: |
+          echo "Deploying to App Service: ${{ env.AZURE_WEBAPP_NAME }}"
+          echo "Package location: $(pwd)"
+          ls -la  # List files being deployed
+
+      - name: Check App Service Configuration
+        run: |
+          az webapp config show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group YourResourceGroupName
+          az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group YourResourceGroupName --query state
