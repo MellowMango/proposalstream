@@ -77,7 +77,12 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E59E38541ED94CBE9B92B6AD616EC1C9 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4C2315A7FF3B40E79461F504EAB383A6 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_621DA2FA5A534D5C9A14690C9BFB520F }}
-          # Remove other parameters to simplify troubleshooting
+
+      - name: Debug Federation Info
+        run: |
+          echo "Subject claim from error: repo:MellowMango/proposalstream:ref:refs/heads/main"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch ref: ${{ github.ref }}"
 
       - name: Test Azure Connection
         run: |
@@ -102,9 +107,3 @@ jobs:
         run: |
           az webapp config show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group YourResourceGroupName
           az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group YourResourceGroupName --query state
-
-      - name: Debug Federation Info
-        run: |
-          echo "Expected subject: repo:MellowMango/proposalstream:environment:Production"
-          echo "GitHub Environment: ${{ github.environment }}"
-          echo "Repository: ${{ github.repository }}"
