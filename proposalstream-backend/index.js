@@ -73,11 +73,16 @@ app.use('/api/contract-templates', contractTemplatesRoutes);
 app.use('/api/user', usersRoutes);
 app.use('/api/properties', propertiesRoutes); // Use propertiesRoutes
 
-// Wildcard route for handling 404s
-app.use('*', (req, res) => {
-  console.log(`No route found for ${req.method} ${req.originalUrl}`);
-  res.status(404).send('Not Found');
-});
+// Add these lines after your route definitions and before the wildcard route
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React build directory
+  app.use(express.static(path.join(__dirname, '../proposalstream-frontend/build')));
+
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../proposalstream-frontend/build', 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use(errorHandler);
@@ -86,6 +91,12 @@ app.use(errorHandler);
 app.use((err, req, res, next) => {
   logger.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal Server Error', details: err.message });
+});
+
+// Add near the top of your Express app setup
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  next();
 });
 
 const startServer = async () => {

@@ -51,9 +51,11 @@ jobs:
 
       - name: Zip artifact for deployment
         run: |
-          cp ./proposalstream-backend/package.json ./
-          cp ./proposalstream-backend/package-lock.json ./
-          zip -r release.zip ./proposalstream-frontend/build ./proposalstream-backend ./package.json ./package-lock.json
+          mkdir -p deploy
+          cp -r proposalstream-frontend/build deploy/proposalstream-frontend/build
+          cp -r proposalstream-backend/* deploy/
+          cd deploy
+          zip -r ../release.zip ./*
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3

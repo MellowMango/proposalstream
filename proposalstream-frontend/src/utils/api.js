@@ -6,7 +6,8 @@ export const UNAUTHORIZED_EVENT = 'unauthorized';
 // Environment-based Backend URL Resolution
 export const getBackendUrl = () => {
   if (process.env.NODE_ENV === 'production') {
-    return process.env.REACT_APP_API_URL; // e.g., 'https://myapp-backend.azurewebsites.net'
+    // In production, use relative path since frontend and backend are served from same domain
+    return '';
   } else {
     return process.env.REACT_APP_API_URL_LOCAL || 'http://localhost:6001';
   }
