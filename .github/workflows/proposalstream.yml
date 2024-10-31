@@ -51,11 +51,29 @@ jobs:
 
       - name: Zip artifact for deployment
         run: |
+          # Create deploy directory
           mkdir -p deploy
-          cp -r proposalstream-frontend/build deploy/proposalstream-frontend/build
+          
+          # Create necessary subdirectories
+          mkdir -p deploy/proposalstream-frontend
+          
+          # Copy frontend build
+          cp -r proposalstream-frontend/build deploy/proposalstream-frontend/
+          
+          # Copy backend files
           cp -r proposalstream-backend/* deploy/
+          
+          # Debug output
+          echo "Contents of deploy directory before zip:"
+          ls -la deploy
+          
+          # Create zip file
           cd deploy
-          zip -r ../release.zip ./*
+          zip -r ../release.zip .
+          
+          # Debug output
+          echo "Contents of zip file:"
+          unzip -l ../release.zip
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
