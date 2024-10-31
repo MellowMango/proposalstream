@@ -99,3 +99,10 @@ jobs:
           package: .
           startup-command: 'cd proposalstream-backend && npm start'
           slot-name: 'production'
+        env:
+          CONTRACT_TEMPLATES_CONTAINER: ${{ secrets.CONTRACT_TEMPLATES_CONTAINER }}
+          PROPERTY_COI_CONTAINER: ${{ secrets.PROPERTY_COI_CONTAINER }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          NODE_ENV: 'production'
